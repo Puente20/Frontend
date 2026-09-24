@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+*/migrations/__init__.py
+*/migrations/*.py
+
+
+# IDEs / editors
+.vscode/
+.cursor/
+.idea/
+
+# OS files
+.DS_Store
+
+# Dependencies
+node_modules
+
+# MacOs specific files
+.DS_Store
+*.DS_Store
