@@ -7,6 +7,7 @@
 }
 
 .page-header {
+  position: relative;
   display: flex;
   align-items: center;
   min-height: 38px;
@@ -20,8 +21,8 @@
 
 .brand-logo {
   position: absolute;
-  top: 40px;   
-  left: -40px;  
+  top: 12px;
+  left: -54px;
   display: block;
   width: 250px;
   height: auto;

@@ -16,3 +16,4 @@ export const routes: Routes = [
   { path: 'nueva-reserva', component: NuevaReservaComponent },
   { path: '**', redirectTo: 'login' }
 ];
+
