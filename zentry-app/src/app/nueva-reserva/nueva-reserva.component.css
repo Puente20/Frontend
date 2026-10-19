@@ -1,0 +1,23 @@
+.qr-page {
+  min-height: 100vh;
+  padding: 28px 14px 24px;
+  color: #171717;
+  background-color: #F7F4EF;
+  font-family: 'Inter', sans-serif;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  color: inherit;
+  font-size: 14px;
+}
+
+.qr-page h1 {
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.qr-page p {
+  font-size: 14px;
+}

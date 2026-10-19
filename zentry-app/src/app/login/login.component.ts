@@ -28,5 +28,8 @@ export class LoginComponent {
     if (this.rolSeleccionado === 'administrador') {
       this.router.navigate(['/admin-home']);
     }
+    if (this.rolSeleccionado === 'residente') {
+      this.router.navigate(['/resident-home']);
+    }
   }
 }
