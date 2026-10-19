@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,17 +11,22 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  rolSeleccionado: 'residente' | 'administrador' | 'guardia' = 'residente';
-
-  // Controla la visibilidad de la contraseña
+  rolSeleccionado: 'residente' | 'administrador' | 'guardia' = 'administrador';
   mostrarPassword: boolean = false;
 
-  cambiarRol(rol: 'residente' | 'administrador' | 'guardia') {
+  constructor(private router: Router) {}
+
+  cambiarRol(rol: 'residente' | 'administrador' | 'guardia'): void {
     this.rolSeleccionado = rol;
   }
 
-  // Función para alternar el ícono del ojo
-  ojoContra() {
+  ojoContra(): void {
     this.mostrarPassword = !this.mostrarPassword;
+  }
+
+  iniciarSesion(): void {
+    if (this.rolSeleccionado === 'administrador') {
+      this.router.navigate(['/admin-home']);
+    }
   }
 }
