@@ -22,7 +22,7 @@
   <!-- Selector de tipo de invitación -->
   <section class="type-section">
     <label class="section-label">Tipo de invitación</label>
-    <div class="toggle-pill">
+    <div class="toggle-pill" [class.is-concurrent]="tipoInvitacion === 'concurrente'">
       <button
         type="button"
         class="toggle-option"
@@ -35,7 +35,7 @@
         class="toggle-option"
         [class.active]="tipoInvitacion === 'concurrente'"
         (click)="seleccionarTipo('concurrente')">
-        Visita concurrente
+        Visita recurrente
       </button>
     </div>
   </section>

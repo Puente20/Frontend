@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 export class GenerateQrComponent {
   fechaActual: string = '13 de Agosto de 2026';
   tipoInvitacion: 'unica' | 'concurrente' = 'unica';
+  private navigationTimer?: ReturnType<typeof setTimeout>;
 
   invitacion = {
     nombreVisitante: '',
@@ -23,7 +24,20 @@ export class GenerateQrComponent {
   constructor(private router: Router) {}
 
   seleccionarTipo(tipo: 'unica' | 'concurrente'): void {
+    if (tipo === 'concurrente') {
+      this.tipoInvitacion = tipo;
+      this.navegarLuego('/generar-qr-concurrente');
+      return;
+    }
+
     this.tipoInvitacion = tipo;
+  }
+
+  private navegarLuego(ruta: string): void {
+    clearTimeout(this.navigationTimer);
+    this.navigationTimer = setTimeout(() => {
+      void this.router.navigate([ruta]);
+    }, 400);
   }
 
   volver(): void {

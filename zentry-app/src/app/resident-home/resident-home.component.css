@@ -141,6 +141,18 @@
 .panic-button svg {
   width: 110px;
   height: auto;
+  transform-origin: center;
+  transition: transform 0.18s ease;
+}
+
+.panic-button svg:hover {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panic-button svg {
+    transition: none;
+  }
 }
 
 .siren-icon {
