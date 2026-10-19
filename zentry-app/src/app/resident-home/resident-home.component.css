@@ -20,32 +20,33 @@
 
 .brand-logo {
   position: absolute;
-  top: 20px;   
-  left: -15px;  
+  top: 40px;   
+  left: -40px;  
   display: block;
-  width: 150px;
+  width: 250px;
   height: auto;
   object-fit: contain;
 }
 
 .welcome {
-  margin-bottom: 16px;
+  margin-top: 90px;
+  margin-bottom: 28px;
 }
 
 .welcome h1 {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 700;
   line-height: 1.25;
 }
 
 .welcome p {
   margin-top: 2px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .resident-home h2 {
   margin-bottom: 5px;
-  font-size: 12px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -57,21 +58,22 @@
 .reservation-card {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: left;
+  justify-content: space-between;
   padding: 10px;
   background-color: #fff;
-  border-radius: 9px;
+  border-radius: 15px;
   box-shadow: 0 3px 9px rgba(0, 0, 0, 0.2);
 }
 
 .invitation-card {
-  min-height: 80px;
+  min-height: 150px;
 }
 
 .qr-icon,
 .calendar-icon {
-  width: 22px;
-  height: 22px;
+  width: 40px;
+  height: 40px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -80,22 +82,22 @@
 }
 
 .card-caption {
-  margin-top: 5px;
-  font-size: 10px;
+  margin: 0;
+  font-size: 16px;
 }
 
 .primary-button {
   width: 100%;
-  min-height: 23px;
-  margin-top: 5px;
+  min-height: 40px;
+  margin-top: 0;
   padding: 3px 8px;
   color: #fff;
   background-color: #292929;
   border: 0;
-  border-radius: 7px;
+  border-radius: 15px;
   box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
   font: inherit;
-  font-size: 9px;
+  font-size: 14px;
   cursor: pointer;
 }
 
@@ -111,31 +113,38 @@
 }
 
 .reservation-card {
-  min-height: 79px;
+  box-sizing: border-box;
+  height: 150px;
 }
 
 .panic-button {
   display: flex;
   width: 100%;
-  min-height: 79px;
+  box-sizing: border-box;
+  height: 150px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
   color: #f01427;
   background-color: #fff;
-  border: 1.5px solid #f01427;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(240, 20, 39, 0.25);
+  border: 2px solid #f01427;
+  border-radius: 15px;
+  box-shadow: 0 8px 12px rgba(240, 20, 39, 0.4);
   font: inherit;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
 }
 
+.panic-button svg {
+  width: 110px;
+  height: auto;
+}
+
 .siren-icon {
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
