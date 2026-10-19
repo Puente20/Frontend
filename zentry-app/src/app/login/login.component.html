@@ -5,24 +5,34 @@
     <img src="/logo-zentry-negro.png" alt="Zentry Logo" class="main-logo-img" />
   </div>
 
-  <!-- 2. Deslizador (Toggle) Residente / Administrador -->
-  <div class="role-slider-container">
-    <div class="slider-pill" [class.move-right]="rolSeleccionado === 'administrador'"></div>
-    
-    <button 
+  <!-- 2. Selección de rol -->
+  <div class="role-selector">
+
+    <button
       type="button"
-      class="slider-btn" 
+      class="role-option"
+      [class.active]="rolSeleccionado === 'administrador'"
+      [attr.aria-pressed]="rolSeleccionado === 'administrador'"
+      (click)="cambiarRol('administrador')">
+      Administrador
+    </button>
+
+        <button
+      type="button"
+      class="role-option"
       [class.active]="rolSeleccionado === 'residente'"
+      [attr.aria-pressed]="rolSeleccionado === 'residente'"
       (click)="cambiarRol('residente')">
       Residente
     </button>
-    
-    <button 
+
+    <button
       type="button"
-      class="slider-btn" 
-      [class.active]="rolSeleccionado === 'administrador'"
-      (click)="cambiarRol('administrador')">
-      Administrador
+      class="role-option"
+      [class.active]="rolSeleccionado === 'guardia'"
+      [attr.aria-pressed]="rolSeleccionado === 'guardia'"
+      (click)="cambiarRol('guardia')">
+      Guardia
     </button>
   </div>
 
@@ -32,7 +42,7 @@
     <!-- Campo Usuario / Email -->
     <div class="form-group">
       <label for="identificador">
-        {{ rolSeleccionado === 'residente' ? 'ID de residente o email' : 'ID de administrador o email' }}
+        {{ rolSeleccionado === 'residente' ? 'ID de residente o email' : rolSeleccionado === 'administrador' ? 'ID de administrador o email' : 'ID de guardia o email' }}
       </label>
       <div class="input-row">
         <div class="input-box">

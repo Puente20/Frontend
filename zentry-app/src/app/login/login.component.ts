@@ -10,14 +10,12 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  // Controla el deslizador: 'residente' o 'admin'
-  rolSeleccionado: 'residente' | 'admin' = 'residente';
+  rolSeleccionado: 'residente' | 'administrador' | 'guardia' = 'residente';
 
   // Controla la visibilidad de la contraseña
   mostrarPassword: boolean = false;
 
-  // Función para cambiar el deslizador
-  cambiarRol(rol: 'residente' | 'admin') {
+  cambiarRol(rol: 'residente' | 'administrador' | 'guardia') {
     this.rolSeleccionado = rol;
   }
 
