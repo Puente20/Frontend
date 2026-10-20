@@ -23,6 +23,7 @@ media/
 staticfiles/
 */migrations/__init__.py
 */migrations/*.py
+*/migrations/
 
 
 # IDEs / editors
