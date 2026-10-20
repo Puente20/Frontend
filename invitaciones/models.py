@@ -1,7 +1,7 @@
-import uuid
 from django.db import models
 
 from base.models import ActiveStatusModel, Persona
+from . import InvitacionTipo, InvitacionEstado
 
 # --- Invitaciones --- #
 
@@ -18,7 +18,7 @@ class Invitacion(models.Model):
     fecha_inicio = models.DateTimeField()
     fecha_visita = models.DateTimeField()
     dias_habilitados = models.PositiveIntegerField()
-    tipo = models.CharField(choices=None)
+    tipo = models.CharField(choices=InvitacionTipo.CHOICES)
 
 # --- Proveedores --- #
 
@@ -29,7 +29,6 @@ class AutorizacionProveedor(models.Model):
     hora_hasta = models.TimeField()
     valido_desde = models.DateField()
     valido_desde = models.DateField()
-    estado = models.CharField(choices=None)
 
 # --- Trace --- #
 
@@ -42,12 +41,11 @@ class InvitacionHistorico(models.Model):
     fecha_visita = models.DateTimeField()
     fecha_fin = models.DateTimeField()
     dias_habilitados = models.PositiveIntegerField()
-    estado = models.CharField(choices=None)
-    tipo = models.CharField(choices=None)
+    estado = models.CharField(choices=InvitacionEstado.CHOICES)
+    tipo = models.CharField(choices=InvitacionTipo.CHOICES)
 
 class RegistroAcceso(ActiveStatusModel):
     hora_desde = models.TimeField()
     hora_hasta = models.TimeField()
     valido_desde = models.DateTimeField()
     valido_hasta = models.DateTimeField()
-    is_active = models.BooleanField(default=True)
