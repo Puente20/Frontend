@@ -13,16 +13,18 @@
 
 /* --- IMÁGENES --- */
 .header-logo {
-  margin-top: 4px;
-  margin-bottom: 4px;
   display: flex;
   justify-content: center;
-  width: 100%;
+  align-items: center;
+  width: 95%;
+  height: 210px;
+  overflow: hidden;
 }
 
 .main-logo-img {
-  width: 110%;
-  max-width: 420px;
+  width: 600px;
+  max-width: none;
+  flex: 0 0 auto;
   height: auto;
   object-fit: contain;
 }
@@ -64,6 +66,7 @@
   cursor: pointer;
   transition: color 0.25s ease, background-color 0.25s ease;
   white-space: nowrap;
+  border-width: 1.5px;
 }
 
 .role-option.active {

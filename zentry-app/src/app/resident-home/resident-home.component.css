@@ -1,4 +1,5 @@
 .resident-home {
+  position: relative;
   min-height: 100vh;
   padding: 28px 14px 24px;
   color: #171717;
