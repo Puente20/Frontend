@@ -21,7 +21,7 @@ body {
   align-items: center;
 }
 
-/* Marco simulador de celular con tamaño fijo */
+/* Marco simulador de celular con tamaño fijo (iPhone 393x852) */
 app-root {
   display: block;
   width: 393px;
@@ -65,6 +65,12 @@ app-root::-webkit-scrollbar {
   width: 100% !important;
   max-width: 100% !important;
   min-height: 100% !important;
+}
+
+.alta-residentes-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 1071px !important;
 }
 
 .bottom-nav-container {

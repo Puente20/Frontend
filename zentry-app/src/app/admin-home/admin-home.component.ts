@@ -24,10 +24,15 @@ export class AdminHomeComponent {
   }
 
   seleccionarAccion(accion: 'alta' | 'editar' | 'historial'): void {
+    if (accion === 'alta') {
+      void this.router.navigate(['/alta-residentes']);
+      return;
+    }
+
     console.log('Acción seleccionada:', accion);
   }
 
   cerrarSesion(): void {
-    this.router.navigate(['/login']);
+    void this.router.navigate(['/login']);
   }
 }

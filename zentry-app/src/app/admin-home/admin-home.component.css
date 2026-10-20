@@ -16,6 +16,8 @@
   align-items: center;
   gap: 12px;
   margin-bottom: 30px;
+  position: relative;
+  top: 16px;
 }
 
 .avatar-circle {
@@ -89,13 +91,13 @@
 .cards-list {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 30px;
   width: 100%;
 }
 
 .management-card {
   width: 100%;
-  min-height: 132px;
+  min-height: 150px;
   background-color: #FFFFFF;
   border: none;
   border-radius: 16px;
@@ -120,8 +122,8 @@
 }
 
 .card-icon-box {
-  width: 60px;
-  height: 60px;
+  width: 80px;
+  height: 8 0px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,8 +132,8 @@
 }
 
 .card-icon {
-  width: 58px;
-  height: 58px;
+  width: 70px;
+  height: 70px;
 }
 
 .card-content {
@@ -142,7 +144,7 @@
 
 .card-title {
   font-family: 'Inter', sans-serif;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
   color: #000000;
   margin: 0 0 6px 0;
@@ -151,7 +153,7 @@
 
 .card-description {
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 400;
   color: #1E1E1E;
   margin: 0;
