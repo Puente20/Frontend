@@ -31,4 +31,6 @@ INSTALLED_APPS = [
     'zentry',
     'administracion',
     'invitaciones',
+    'reservas',
+    'barrios',
 ]
