@@ -1,8 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-from base.models import Persona
+from base import AccountRole
+from base.models import Persona, ActiveStatusModel
 from . import LoteEstado, PuntoAccesoTipo, PuntoAccesoEstado
+
+class Account(ActiveStatusModel):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
+    role = models.CharField(choices=AccountRole.ROLES)
+
+    def __str__(self):
+        return self.user.username
+
 # --- Actores --- #
 
 class Administrador(Persona):
