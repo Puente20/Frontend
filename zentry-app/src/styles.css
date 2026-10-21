@@ -60,6 +60,9 @@ app-root::-webkit-scrollbar {
 
 .login-wrapper,
 .admin-wrapper,
+.residentes-propietarios-wrapper,
+.residentes-inquilinos-wrapper,
+.nueva-reserva-wrapper,
 .resident-home,
 .qr-page {
   width: 100% !important;

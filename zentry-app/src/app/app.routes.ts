@@ -25,5 +25,6 @@ export const routes: Routes = [
   { path: 'generar-qr-concurrente', component: GenerateQr2Component },
   { path: 'panic-button', component: PanicButtonComponent },
   { path: 'nueva-reserva', component: NuevaReservaComponent },
+  { path: 'reservas', redirectTo: 'nueva-reserva', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' }
 ];

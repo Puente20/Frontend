@@ -32,7 +32,7 @@
           <path d="M12 3V7.5M24 3V7.5M4.5 13.5H31.5M12 19.5H12.015M18 19.5H18.015M24 19.5H24.015M12 25.5H12.015M18 25.5H18.015M24 25.5H24.015M7.5 4.5H28.5C30.1569 4.5 31.5 5.84315 31.5 7.5V28.5C31.5 30.1569 30.1569 31.5 28.5 31.5H7.5C5.84315 31.5 4.5 30.1569 4.5 28.5V7.5C4.5 5.84315 5.84315 4.5 7.5 4.5Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
         </svg>
 
-        <p class="card-caption">Ver reservas</p>
+        <p class="card-caption">Gestión de reservas</p>
         <button class="primary-button" type="button" (click)="IrANuevaReserva()">Nueva reserva</button>
       </div>
     </div>
@@ -59,77 +59,20 @@
   <section class="activity-section" aria-labelledby="activity-title">
     <h2 id="activity-title">Últimos movimientos</h2>
     <ul class="activity-list" aria-label="Historial de movimientos">
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <li class="activity-item" *ngFor="let movimiento of ultimosMovimientos; trackBy: trackByMovimientoId">
+        <svg *ngIf="movimiento.tipo === 'visitante-aprobado'" class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M9.00001 12L11 14L15 9.99998M3.85001 8.61998C3.70405 7.9625 3.72646 7.27882 3.91517 6.63231C4.10387 5.98581 4.45276 5.39742 4.92948 4.9217C5.4062 4.44597 5.99532 4.09832 6.64222 3.91097C7.28911 3.72362 7.97284 3.70264 8.63001 3.84998C8.99172 3.28428 9.49001 2.81873 10.079 2.49626C10.6679 2.17379 11.3286 2.00476 12 2.00476C12.6715 2.00476 13.3321 2.17379 13.9211 2.49626C14.51 2.81873 15.0083 3.28428 15.37 3.84998C16.0282 3.702 16.7131 3.72288 17.361 3.91069C18.0089 4.09849 18.5988 4.44712 19.0759 4.92413C19.5529 5.40114 19.9015 5.99105 20.0893 6.63898C20.2771 7.28691 20.298 7.97181 20.15 8.62998C20.7157 8.99168 21.1812 9.48998 21.5037 10.0789C21.8262 10.6679 21.9952 11.3285 21.9952 12C21.9952 12.6714 21.8262 13.3321 21.5037 13.921C21.1812 14.51 20.7157 15.0083 20.15 15.37C20.2973 16.0271 20.2764 16.7109 20.089 17.3578C19.9017 18.0047 19.554 18.5938 19.0783 19.0705C18.6026 19.5472 18.0142 19.8961 17.3677 20.0848C16.7212 20.2735 16.0375 20.2959 15.38 20.15C15.0188 20.7178 14.5201 21.1854 13.9301 21.5093C13.3402 21.8332 12.678 22.003 12.005 22.003C11.332 22.003 10.6698 21.8332 10.0799 21.5093C9.48993 21.1854 8.99125 20.7178 8.63001 20.15C7.97284 20.2973 7.28911 20.2763 6.64222 20.089C5.99532 19.9016 5.4062 19.554 4.92948 19.0783C4.45276 18.6025 4.10387 18.0141 3.91517 17.3676C3.72646 16.7211 3.70405 16.0374 3.85001 15.38C3.27997 15.0192 2.81042 14.5201 2.48506 13.9292C2.15969 13.3382 1.98907 12.6746 1.98907 12C1.98907 11.3254 2.15969 10.6617 2.48506 10.0708C2.81042 9.4798 3.27997 8.98073 3.85001 8.61998Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
         </svg>
-        <time>19:20</time>
-        <span class="activity-description">Visitante aprobado</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Patente: AG 122 OH</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M8 2V5M16 2V5M3 9H21M9 15L11 17L15 13M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
-        </svg>
-        <time>18:45</time>
-        <span class="activity-description">Cancha de pádel reservada</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Fecha: 06/12/2028 · 18:00</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg *ngIf="movimiento.tipo === 'visitante-rechazado'" class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M14.5 9.49999L9.5 14.5M9.5 9.49999L14.5 14.5M20 13C20 18 16.5 20.5 12.34 21.95C12.1222 22.0238 11.8855 22.0203 11.67 21.94C7.5 20.5 4 18 4 13V5.99999C4 5.73478 4.10536 5.48042 4.29289 5.29289C4.48043 5.10535 4.73478 4.99999 5 4.99999C7 4.99999 9.5 3.79999 11.24 2.27999C11.4519 2.09899 11.7214 1.99954 12 1.99954C12.2786 1.99954 12.5481 2.09899 12.76 2.27999C14.51 3.80999 17 4.99999 19 4.99999C19.2652 4.99999 19.5196 5.10535 19.7071 5.29289C19.8946 5.48042 20 5.73478 20 5.99999V13Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
         </svg>
-        <time>17:22</time>
-        <span class="activity-description">Visitante rechazado</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Patente: AC 431 DK</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg *ngIf="movimiento.tipo === 'reserva'" class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M8 2V5M16 2V5M3 9H21M9 15L11 17L15 13M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
         </svg>
-        <time>15:10</time>
-        <span class="activity-description">SUM reservado</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Fecha: 05/12/2028 · 20:00</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M8 2V5M16 2V5M3 9H21M9 15L11 17L15 13M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
-        </svg>
-        <time>14:35</time>
-        <span class="activity-description">Cancha de tenis reservada</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Fecha: 04/12/2028 · 17:00</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M8 2V5M16 2V5M3 9H21M9 15L11 17L15 13M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
-        </svg>
-        <time>13:50</time>
-        <span class="activity-description">Cancha de fútbol reservada</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Fecha: 03/12/2028 · 19:00</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M9.00001 12L11 14L15 9.99998M3.85001 8.61998C3.70405 7.9625 3.72646 7.27882 3.91517 6.63231C4.10387 5.98581 4.45276 5.39742 4.92948 4.9217C5.4062 4.44597 5.99532 4.09832 6.64222 3.91097C7.28911 3.72362 7.97284 3.70264 8.63001 3.84998C8.99172 3.28428 9.49001 2.81873 10.079 2.49626C10.6679 2.17379 11.3286 2.00476 12 2.00476C12.6715 2.00476 13.3321 2.17379 13.9211 2.49626C14.51 2.81873 15.0083 3.28428 15.37 3.84998C16.0282 3.702 16.7131 3.72288 17.361 3.91069C18.0089 4.09849 18.5988 4.44712 19.0759 4.92413C19.5529 5.40114 19.9015 5.99105 20.0893 6.63898C20.2771 7.28691 20.298 7.97181 20.15 8.62998C20.7157 8.99168 21.1812 9.48998 21.5037 10.0789C21.8262 10.6679 21.9952 11.3285 21.9952 12C21.9952 12.6714 21.8262 13.3321 21.5037 13.921C21.1812 14.51 20.7157 15.0083 20.15 15.37C20.2973 16.0271 20.2764 16.7109 20.089 17.3578C19.9017 18.0047 19.554 18.5938 19.0783 19.0705C18.6026 19.5472 18.0142 19.8961 17.3677 20.0848C16.7212 20.2735 16.0375 20.2959 15.38 20.15C15.0188 20.7178 14.5201 21.1854 13.9301 21.5093C13.3402 21.8332 12.678 22.003 12.005 22.003C11.332 22.003 10.6698 21.8332 10.0799 21.5093C9.48993 21.1854 8.99125 20.7178 8.63001 20.15C7.97284 20.2973 7.28911 20.2763 6.64222 20.089C5.99532 19.9016 5.4062 19.554 4.92948 19.0783C4.45276 18.6025 4.10387 18.0141 3.91517 17.3676C3.72646 16.7211 3.70405 16.0374 3.85001 15.38C3.27997 15.0192 2.81042 14.5201 2.48506 13.9292C2.15969 13.3382 1.98907 12.6746 1.98907 12C1.98907 11.3254 2.15969 10.6617 2.48506 10.0708C2.81042 9.4798 3.27997 8.98073 3.85001 8.61998Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
-        </svg>
-        <time>12:18</time>
-        <span class="activity-description">Visitante aprobado</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Patente: AB 646 NH</span>
-      </li>
-      <li class="activity-item">
-        <svg class="activity-status" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M8 2V5M16 2V5M3 9H21M9 15L11 17L15 13M5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5C3 3.89543 3.89543 3 5 3Z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="black"/>
-        </svg>
-        <time>11:42</time>
-        <span class="activity-description">Cancha de básquet reservada</span>
-        <span class="activity-location">Lote 1</span>
-        <span class="activity-detail">Fecha: 02/12/2028 · 16:00</span>
+        <time [attr.datetime]="movimiento.fechaRegistro">{{ movimiento.hora }}</time>
+        <span class="activity-description">{{ movimiento.descripcion }}</span>
+        <span class="activity-location">{{ movimiento.ubicacion }}</span>
+        <span class="activity-detail">{{ movimiento.detalle }}</span>
       </li>
     </ul>
   </section>
