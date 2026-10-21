@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-home',
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   templateUrl: './admin-home.component.html',
   styleUrl: './admin-home.component.css'
 })
-export class AdminHomeComponent {
+export class AdminHomeComponent implements OnInit {
   adminNombre: string = 'Valentina Canepa';
   adminRol: string = 'Administradora';
   fechaActual: string = '13 de Agosto de 2026';
@@ -17,15 +17,39 @@ export class AdminHomeComponent {
 
   tabActiva: 'inicio' | 'perfil' | 'ajustes' = 'inicio';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.route.queryParamMap.subscribe((params) => {
+      const tab = params.get('tab');
+      if (tab === 'ajustes') {
+        this.tabActiva = 'ajustes';
+      } else if (tab === 'inicio') {
+        this.tabActiva = 'inicio';
+      }
+    });
+  }
 
   cambiarTab(tab: 'inicio' | 'perfil' | 'ajustes'): void {
+    if (tab === 'perfil') {
+      void this.router.navigate(['/residentes-propietarios']);
+      return;
+    }
+
     this.tabActiva = tab;
   }
 
   seleccionarAccion(accion: 'alta' | 'editar' | 'historial'): void {
     if (accion === 'alta') {
       void this.router.navigate(['/alta-residentes']);
+      return;
+    }
+
+    if (accion === 'editar') {
+      void this.router.navigate(['/residentes-propietarios']);
       return;
     }
 
