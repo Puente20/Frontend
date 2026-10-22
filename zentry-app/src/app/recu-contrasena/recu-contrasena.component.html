@@ -1,0 +1,22 @@
+<div class="recu-contra-Container">
+    <img src="/logo-zentry-negro.png" alt="Zentry" class="zentry-logo" />
+    <form #formulario="ngForm" class="formulario" (ngSubmit)="enviarSolicitud(formulario)">
+        <p>Ingresa tu correo y le notificaremos al administrador para restablecer tu contraseña.</p>
+        <label for="email">Correo electrónico</label>
+        <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="correo"
+            placeholder="ejemplo@correo.com"
+            autocomplete="email"
+            #emailControl="ngModel"
+            required
+        />
+        <button type="submit" [disabled]="formulario.invalid">Continuar</button>
+        <span class="error" *ngIf="emailControl.invalid && emailControl.touched">
+            Ingresa un correo electrónico válido.
+        </span>
+        <p class="mensaje" *ngIf="mensaje" role="status">{{ mensaje }}</p>
+    </form>
+</div>

@@ -13,10 +13,12 @@ import { NuevaReservaComponent } from './nueva-reserva/nueva-reserva.component';
 import { GuardiaHomeComponent } from './guardia-home/guardia-home.component';
 import { EscanearQrComponent } from './escanear-qr/escanear-qr.component';
 import { RegistrarEgresoComponent } from './registrar-egreso/registrar-egreso.component';
+import { RecuContrasenaComponent } from './recu-contrasena/recu-contrasena.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'recu-contrasena', component: RecuContrasenaComponent },
   { path: 'admin-home', component: AdminHomeComponent },
   { path: 'alta-residentes', component: AltaResidentesComponent },
   { path: 'alta-inquilino', component: AltaInquilinoComponent },
