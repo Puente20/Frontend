@@ -10,6 +10,9 @@ import { GenerateQrComponent } from './generate-qr/generate-qr.component';
 import { GenerateQr2Component } from './generate qr (2)/generateqr2.component';
 import { PanicButtonComponent } from './panic-button/panic-button.component';
 import { NuevaReservaComponent } from './nueva-reserva/nueva-reserva.component';
+import { GuardiaHomeComponent } from './guardia-home/guardia-home.component';
+import { EscanearQrComponent } from './escanear-qr/escanear-qr.component';
+import { RegistrarEgresoComponent } from './registrar-egreso/registrar-egreso.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -26,5 +29,8 @@ export const routes: Routes = [
   { path: 'panic-button', component: PanicButtonComponent },
   { path: 'nueva-reserva', component: NuevaReservaComponent },
   { path: 'reservas', redirectTo: 'nueva-reserva', pathMatch: 'full' },
+  { path: 'guardia-home', component: GuardiaHomeComponent },
+  { path: 'escanear-qr', component: EscanearQrComponent },
+  { path: 'registrar-egreso', component: RegistrarEgresoComponent },
   { path: '**', redirectTo: 'login' }
 ];

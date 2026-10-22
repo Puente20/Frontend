@@ -1,0 +1,90 @@
+/* Contenedor principal */
+.guardia-wrapper {
+  min-height: 100%;
+  padding: 28px 22px 35px;
+  background-color: #F7F4EF;
+  font-family: 'Inter', sans-serif;
+  color: #2B2B29;
+}
+
+/* Encabezado y logo */
+.header {
+  height: 120px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 250px;
+  height: auto;
+}
+
+/* Titulo de la pantalla */
+.titulo {
+  margin-bottom: 30px;
+}
+
+.titulo h1 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.titulo p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Contenedor de las tarjetas */
+.acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Tarjetas de ingreso y egreso */
+.tarjeta {
+  background-color: white;
+  border-radius: 16px;
+  padding: 24px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.10);
+}
+
+.tarjeta h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.tarjeta p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* Botones principales */
+.tarjeta button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background-color: #2B2B29;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Boton cerrar sesion */
+.btn-salir {
+  display: block;
+  margin: 40px auto 0;
+  padding: 12px 25px;
+  border: 1px solid #2B2B29;
+  border-radius: 10px;
+  background-color: transparent;
+  color: #2B2B29;
+  cursor: pointer;
+}
+
+/* Efecto al presionar */
+button:active {
+  transform: scale(0.98);
+}
