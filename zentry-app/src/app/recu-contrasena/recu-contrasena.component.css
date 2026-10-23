@@ -16,6 +16,25 @@
     object-fit: contain;
     margin: 0 auto 44px;
 }
+.volver-atras {
+    appearance: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.volver-atras:focus,
+.volver-atras:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+
+.volver-atras svg {
+    display: block;
+    border-radius: 50%;
+}
 
 .formulario {
     width: 100%;
