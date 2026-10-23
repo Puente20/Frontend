@@ -49,7 +49,7 @@ export class AdminHomeComponent implements OnInit {
     }
 
     if (accion === 'editar') {
-      void this.router.navigate(['/residentes-propietarios']);
+      void this.router.navigate(['/editar-residentes']);
       return;
     }
 

@@ -22,11 +22,12 @@
 }
 
 .main-logo-img {
-  width: 600px;
+  width: 500px;
   max-width: none;
   flex: 0 0 auto;
   height: auto;
   object-fit: contain;
+  margin-top:20px;
 }
 
 .footer-logo {

@@ -1,36 +1,29 @@
 <div class="recu-contra-Container">
-    <div class="recu-contra-header">
-        <button type="button" (click)="volveraAtras()" aria-label="Ir a login" class="volver-atras"> 
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M25 0.5C38.531 0.5 49.5 11.469 49.5 25C49.5 38.531 38.531 49.5 25 49.5C11.469 49.5 0.5 38.531 0.5 25C0.5 11.469 11.469 0.5 25 0.5Z" fill="#2C2C2C"/>
-<path d="M25 0.5C38.531 0.5 49.5 11.469 49.5 25C49.5 38.531 38.531 49.5 25 49.5C11.469 49.5 0.5 38.531 0.5 25C0.5 11.469 11.469 0.5 25 0.5Z" stroke="#2C2C2C" stroke-linecap="round"/>
-<path d="M30.8333 25H19.1666M25 19.1667L19.1666 25L25 30.8333" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke="#F5F5F5"/>
-</svg>
-
-        </button>
+  <div class="recu-contra-header">
     <img src="/logo-zentry-negro.png" alt="Zentry" class="zentry-logo" />
-    </div>
-    <form #formulario="ngForm" class="formulario" (ngSubmit)="enviarSolicitud(formulario)">
-        <p>Ingresa tu correo y le notificaremos al administrador para restablecer tu contraseña.</p>
-        <label for="email">Correo electrónico</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            [(ngModel)]="correo"
-            placeholder="ejemplo@correo.com"
-            autocomplete="email"
-            #emailControl="ngModel"
-            email
-            required
-        />
-        <button type="submit">Continuar</button>
-        <span class="error" *ngIf="emailControl.invalid && emailControl.touched" role="alert">
-            <ng-container *ngIf="emailControl.hasError('required'); else correoInvalido">
-                Ingresa tu correo electrónico.
-            </ng-container>
-            <ng-template #correoInvalido>Ingresa un correo electrónico válido, por ejemplo nombre@dominio.com.</ng-template>
-        </span>
-        <p class="mensaje" *ngIf="mensaje" role="status">{{ mensaje }}</p>
-    </form>
+  </div>
+
+  <form #formulario="ngForm" class="formulario" (ngSubmit)="enviarSolicitud(formulario)">
+    <p>Ingresa tu correo y le notificaremos al administrador para restablecer tu contraseña.</p>
+    <label for="email">Correo electrónico</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      [(ngModel)]="correo"
+      placeholder="ejemplo@correo.com"
+      autocomplete="email"
+      #emailControl="ngModel"
+      email
+      required />
+    <button type="submit">Continuar</button>
+    <button type="button" class="btn-volver" (click)="volveraAtras()">Volver</button>
+    <span class="error" *ngIf="emailControl.invalid && emailControl.touched" role="alert">
+      <ng-container *ngIf="emailControl.hasError('required'); else correoInvalido">
+        Ingresa tu correo electrónico.
+      </ng-container>
+      <ng-template #correoInvalido>Ingresa un correo electrónico válido, por ejemplo nombre@dominio.com.</ng-template>
+    </span>
+    <p class="mensaje" *ngIf="mensaje" role="status">{{ mensaje }}</p>
+  </form>
 </div>

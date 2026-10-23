@@ -5,6 +5,7 @@ import { AltaResidentesComponent } from './alta-residentes/alta-residentes.compo
 import { AltaInquilinoComponent } from './alta-inquilino/alta-inquilino.componente';
 import { ResidentesPropietariosComponent } from './residentes-propietarios/residentes-propietarios.component';
 import { ResidentesInquilinosComponent } from './residentes-inquilinos/residentes-inquilinos.component';
+import { EditarResidentesComponent } from './editar-residentes/editar-residentes.component';
 import { ResidentHomeComponent } from './resident-home/resident-home.component';
 import { GenerateQrComponent } from './generate-qr/generate-qr.component';
 import { GenerateQr2Component } from './generate qr (2)/generateqr2.component';
@@ -27,6 +28,7 @@ export const routes: Routes = [
   { path: 'alta-inquilino', component: AltaInquilinoComponent },
   { path: 'residentes-propietarios', component: ResidentesPropietariosComponent },
   { path: 'residentes-inquilinos', component: ResidentesInquilinosComponent },
+  { path: 'editar-residentes', component: EditarResidentesComponent },
   { path: 'residentes', redirectTo: 'residentes-propietarios', pathMatch: 'full' },
   { path: 'resident-home', component: ResidentHomeComponent },
   { path: 'invitaciones-activas', component: InvitacionesActivasComponent },
