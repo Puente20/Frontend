@@ -1,0 +1,87 @@
+<div class="invitaciones-activas-container">
+  <header class="profile-header">
+    <button class="back-button" type="button" (click)="volver()" aria-label="Volver al inicio">
+      <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M25 0.5C38.531 0.5 49.5 11.469 49.5 25C49.5 38.531 38.531 49.5 25 49.5C11.469 49.5 0.5 38.531 0.5 25C0.5 11.469 11.469 0.5 25 0.5Z" fill="#2C2C2C"/>
+<path d="M25 0.5C38.531 0.5 49.5 11.469 49.5 25C49.5 38.531 38.531 49.5 25 49.5C11.469 49.5 0.5 38.531 0.5 25C0.5 11.469 11.469 0.5 25 0.5Z" stroke="#2C2C2C" stroke-linecap="round"/>
+<path d="M30.8333 25H19.1666M25 19.1667L19.1666 25L25 30.8333" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke="#F5F5F5"/>
+</svg>
+    </button>
+  </header>
+
+  <section class="panel-heading">
+    <h1 class="panel-title">Invitaciones Activas</h1>
+    <p class="panel-subtitle">
+      Fecha, {{ fechaActual }} - <em>{{ nombreBarrio }}</em>
+    </p>
+  </section>
+
+  <main class="invitaciones-list" aria-label="Listado de invitaciones activas">
+    <div class="empty-state-card" *ngIf="cargando()">
+      <p class="empty-state-text">Cargando invitaciones...</p>
+    </div>
+
+    <div class="empty-state-card" *ngIf="!cargando() && error()">
+      <p class="empty-state-text" role="alert">{{ error() }}</p>
+    </div>
+
+    <div class="empty-state-card" *ngIf="!cargando() && !error() && invitaciones().length === 0">
+      <p class="empty-state-text">No hay invitaciones activas.</p>
+    </div>
+
+    <ng-container *ngFor="let invitacion of invitaciones()">
+      <div class="invitacion-card">
+        <div class="invitacion-card-heading">
+          <div>
+            <h2 class="invitacion-title">{{ invitacion.nombreVisitante }}</h2>
+            <p class="invitacion-description">DNI: {{ invitacion.dni }}</p>
+          </div>
+          <span class="invitacion-tipo">
+            {{ invitacion.tipo === 'unica' ? 'Visita única' : 'Recurrente' }}
+          </span>
+        </div>
+
+        <p class="invitacion-description" *ngIf="invitacion.porton">
+          Portón: {{ invitacion.porton }}
+        </p>
+        <p class="invitacion-description" *ngIf="invitacion.fechaInicio && invitacion.fechaFin">
+          Vigencia: {{ formatearFecha(invitacion.fechaInicio) }} al {{ formatearFecha(invitacion.fechaFin) }}
+        </p>
+        <p class="invitacion-description" *ngIf="invitacion.dias?.length">
+          Días habilitados: {{ invitacion.dias?.join(', ') }}
+        </p>
+
+        <button class="used-button" type="button" (click)="confirmarEliminacion(invitacion)">
+          Eliminar invitación
+        </button>
+      </div>
+    </ng-container>
+
+    <div
+      class="modal-overlay"
+      *ngIf="invitacionAEliminar() as invitacion"
+      (click)="cancelarEliminacion()">
+      <section
+        class="modal-card"
+        role="alertdialog"
+        aria-modal="true"
+        aria-labelledby="confirmar-eliminacion-titulo"
+        aria-describedby="confirmar-eliminacion-mensaje"
+        (click)="$event.stopPropagation()">
+        <h2 id="confirmar-eliminacion-titulo">¿Estás seguro?</h2>
+        <p id="confirmar-eliminacion-mensaje">
+          ¿Querés eliminar la invitación para <strong>{{ invitacion.nombreVisitante }}</strong>?
+        </p>
+
+        <div class="modal-actions">
+          <button class="btn-cancelar" type="button" (click)="cancelarEliminacion()">
+            Cancelar
+          </button>
+          <button class="btn-aceptar" type="button" (click)="ejecutarEliminacion()">
+            Sí, eliminar
+          </button>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>

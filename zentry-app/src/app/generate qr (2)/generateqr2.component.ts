@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { InvitacionStorageService } from '../invitaciones-activas/invitacion-storage.service';
 
 @Component({
   selector: 'app-generate-qr-concurrente',
@@ -39,8 +40,12 @@ export class GenerateQr2Component {
   fechaFinTexto = '';
   calendarioAbierto: 'inicio' | 'fin' | null = null;
   mesVisible = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+  mensajeError = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private invitacionStorage: InvitacionStorageService
+  ) {}
 
   seleccionarTipo(tipo: 'unica' | 'concurrente'): void {
     if (tipo === 'unica') {
@@ -294,10 +299,18 @@ export class GenerateQr2Component {
       return;
     }
 
-    console.log('Generando QR con datos:', {
+    this.mensajeError = '';
+    try {
+      this.invitacionStorage.guardar({
       tipo: this.tipoInvitacion,
       ...this.invitacion,
       dias: this.diasSeleccionados
-    });
+      });
+      void this.router.navigate(['/invitaciones-activas']);
+    } catch (error: unknown) {
+      this.mensajeError = error instanceof Error
+        ? error.message
+        : 'No se pudo guardar la invitación.';
+    }
   }
 }

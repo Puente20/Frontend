@@ -1,0 +1,198 @@
+:host {
+  display: block;
+  min-height: 100%;
+  color: #2c2c2c;
+  background: #f7f4ef;
+  font-family: 'Inter', sans-serif;
+}
+
+.invitaciones-activas-container {
+  width: 100%;
+  max-width: 393px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 28px 20px 36px;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-header {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-button {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: #2c2c2c;
+  color: #f5f2eb;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.usuario-nombre {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.panel-heading {
+  margin: 34px 0 20px;
+}
+
+.panel-title {
+  margin: 0 0 6px;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.panel-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: #5a5752;
+}
+
+.invitaciones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.empty-state-card,
+.invitacion-card {
+  padding: 16px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.12);
+}
+
+.empty-state-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.invitacion-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invitacion-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.invitacion-title {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.invitacion-description {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.invitacion-tipo {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #eeeae3;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.used-button {
+  min-height: 40px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: #2c2c2c;
+  color: #f5f2eb;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.back-button:focus-visible,
+.used-button:focus-visible,
+.modal-actions button:focus-visible {
+  outline: 2px solid #77736d;
+  outline-offset: 3px;
+}
+
+.modal-overlay {
+  position: fixed;
+  z-index: 10;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.modal-card {
+  width: min(100%, 340px);
+  box-sizing: border-box;
+  padding: 24px;
+  border-radius: 16px;
+  background: #f7f4ef;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+}
+
+.modal-card h2 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.modal-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.modal-actions button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #e5e1da;
+  color: #2c2c2c;
+}
+
+.btn-aceptar {
+  background: #9b2c2c;
+  color: #fff;
+}

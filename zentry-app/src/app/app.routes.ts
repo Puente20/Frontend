@@ -15,6 +15,7 @@ import { EscanearQrComponent } from './escanear-qr/escanear-qr.component';
 import { RegistrarEgresoComponent } from './registrar-egreso/registrar-egreso.component';
 import { RecuContrasenaComponent } from './recu-contrasena/recu-contrasena.component';
 import { ConfRecuComponent } from './confirmarRecu/confirmarRecu.component';
+import { InvitacionesActivasComponent } from './invitaciones-activas/invitaciones-activas.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -28,6 +29,7 @@ export const routes: Routes = [
   { path: 'residentes-inquilinos', component: ResidentesInquilinosComponent },
   { path: 'residentes', redirectTo: 'residentes-propietarios', pathMatch: 'full' },
   { path: 'resident-home', component: ResidentHomeComponent },
+  { path: 'invitaciones-activas', component: InvitacionesActivasComponent },
   { path: 'generar-qr', component: GenerateQrComponent },
   { path: 'generar-qr-concurrente', component: GenerateQr2Component },
   { path: 'panic-button', component: PanicButtonComponent },

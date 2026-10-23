@@ -17,6 +17,13 @@
   flex-direction: column;
 }
 
+.form-error {
+  margin-top: 12px;
+  color: #9b2c2c;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
 .header {
   position: relative;
   display: flex;

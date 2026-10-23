@@ -136,6 +136,10 @@ export class ResidentHomeComponent implements OnInit {
     void this.router.navigate(['/generar-qr']);
   }
 
+  irAInvitaciones(): void {
+    void this.router.navigate(['/invitaciones-activas']);
+  }
+
   IrAPanic(): void {
     this.mostrarModalPanico = true;
   }
