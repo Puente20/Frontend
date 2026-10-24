@@ -22,7 +22,7 @@ class Invitacion(models.Model):
     fecha_fin = models.DateTimeField(null=True, blank=True)
     dias_habilitados = models.JSONField(default=list ,null=True, blank=True)
     token_qr = models.UUIDField(unique=True)
-    tipo = models.CharField(choices=InvitacionTipo.CHOICES)
+    tipo = models.CharField(max_length=10, choices=InvitacionTipo.CHOICES)
 
     def __str__(self):
         return f"{self.socio.apellido} {self.socio.nombre[:1]} #{self.id} - {self.tipo}"
@@ -51,7 +51,7 @@ class InvitacionHistorico(models.Model):
     fecha_inicio = models.DateTimeField()
     fecha_visita = models.DateTimeField()
     fecha_fin = models.DateTimeField()
-    dias_habilitados = models.PositiveIntegerField()
+    dias_habilitados = models.JSONField(default=list, null=True, blank=True)
     estado = models.CharField(choices=InvitacionEstado.CHOICES)
     tipo = models.CharField(choices=InvitacionTipo.CHOICES)
     token_qr = models.UUIDField(unique=True)
@@ -64,7 +64,6 @@ class RegistroAcceso(ActiveStatusModel):
     hora_hasta = models.TimeField()
     valido_desde = models.DateTimeField()
     valido_hasta = models.DateTimeField()
-    token_qr = models.UUIDField(unique=True)
 
     def __str__(self):
         return f"Registro acceso: #{self.id}"

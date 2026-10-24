@@ -7,7 +7,8 @@ from . import LoteEstado, PuntoAccesoTipo, PuntoAccesoEstado
 
 class Account(ActiveStatusModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='account')
-    role = models.CharField(choices=AccountRole.ROLES)
+    role = models.CharField(max_length=7, choices=AccountRole.ROLES)
+    reset_password = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
@@ -15,24 +16,29 @@ class Account(ActiveStatusModel):
 # --- Actores --- #
 
 class Administrador(Persona):
-    pass ## TODO: ampliar con informacion si necesaria
+    account = models.OneToOneField(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='administrador')
 
 class Guardia(Persona):
-    pass
+    account = models.OneToOneField(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='guardia')
 
 class Socio(Persona):
-    pass
+    account = models.OneToOneField(Account, on_delete=models.SET_NULL, null=True, blank=True, related_name='socio')
+    tipo = models.ForeignKey('Lote', on_delete=models.PROTECT, related_name='residentes')
+
 
 class Proveedor(Persona):
-    telefono = models.CharField()
+    contacto_telefono = models.CharField(max_length=15, blank=True, null=True)
+    contacto_mail = models.CharField(max_length=50, blank=True, null=True)
+
 
 # --- Barrio --- #
 
 class Lote(models.Model):
     numero = models.IntegerField()
-    estado = models.CharField(choices=LoteEstado.CHOICES)
+    estado = models.CharField(max_length=12, choices=LoteEstado.CHOICES)
+
 
 class PuntoAcceso(models.Model):
-    nombre = models.CharField()
-    tipo = models.CharField(choices=PuntoAccesoTipo.CHOICES)
-    estado = models.CharField(choices=PuntoAccesoEstado.CHOICES)
+    nombre = models.CharField(max_length=50)
+    tipo = models.CharField(max_length=9, choices=PuntoAccesoTipo.CHOICES)
+    estado = models.CharField(max_length=12, choices=PuntoAccesoEstado.CHOICES)

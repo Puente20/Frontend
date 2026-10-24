@@ -16,15 +16,20 @@ class ActiveStatusModel(models.Model):
         abstract = True
 
 class Persona(ActiveStatusModel):
-    nombre = models.CharField()
-    apellido = models.CharField()
-    dni = models.CharField()
+    nombre = models.CharField(max_length=50)
+    apellido = models.CharField(max_length=50)
+    dni = models.CharField(max_length=10)
 
     def apellido_nombre(self):
         return f"{self.apellido} {self.nombre}"
 
     def a_nombre(self):
         return f"{self.apellido[:1]} {self.nombre}"
+
+    def clean(self):
+        super().clean()
+        from .services import validar_dni_unico
+        validar_dni_unico(self.dni, self)
 
     class Meta:
         abstract = True
