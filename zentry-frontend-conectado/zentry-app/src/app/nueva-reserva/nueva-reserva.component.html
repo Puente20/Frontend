@@ -1,0 +1,199 @@
+<div class="nueva-reserva-wrapper">
+
+  <!-- Encabezado con botón Volver y Logo Zentry -->
+  <header class="reserva-header">
+    <div class="brand-row">
+      <img src="/logo-zentry-negro.png" alt="Zentry" class="zentry-logo" />
+      <button
+        type="button"
+        class="btn-back"
+        (click)="volver()"
+        aria-label="Volver">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Título Principal y Fecha -->
+  <section class="title-section">
+    <h1 class="main-title">Realizar Reserva</h1>
+    <p class="subtitle-date">Fecha, {{ fechaActual }}</p>
+  </section>
+
+  <!-- Selector Desplegable de Instalación (configurable por barrio desde el backend) -->
+  <section class="instalacion-section" aria-labelledby="instalacion-heading">
+    <h2 id="instalacion-heading" class="section-title">Instalación</h2>
+
+    <div class="instalacion-dropdown-container">
+      <button
+        id="instalacion-select-btn"
+        type="button"
+        class="instalacion-select-trigger"
+        [class.open]="listaInstalacionesAbierta"
+        [attr.aria-expanded]="listaInstalacionesAbierta"
+        aria-haspopup="listbox"
+        aria-controls="instalaciones-listbox"
+        (click)="toggleListaInstalaciones($event)">
+        <div class="instalacion-trigger-info">
+          <span class="instalacion-trigger-nombre">{{ instalacionSeleccionada.nombre }}</span>
+          <span class="instalacion-trigger-meta">
+            Máx. {{ instalacionSeleccionada.maxPersonas }} personas
+          </span>
+        </div>
+
+        <span class="instalacion-chevron" [class.rotated]="listaInstalacionesAbierta" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M6 9L12 15L18 9" stroke="#2C2C2C" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </button>
+
+      <!-- Lista desplegable de instalaciones del barrio -->
+      <ul
+        *ngIf="listaInstalacionesAbierta"
+        id="instalaciones-listbox"
+        class="instalaciones-dropdown-list"
+        role="listbox"
+        aria-label="Instalaciones disponibles en el barrio">
+        <li
+          *ngFor="let inst of instalacionesDisponibles; trackBy: trackByInstalacionId"
+          role="option"
+          class="instalacion-option"
+          [class.selected]="inst.id === instalacionSeleccionada.id"
+          [attr.aria-selected]="inst.id === instalacionSeleccionada.id"
+          (click)="seleccionarInstalacion(inst)">
+          <div class="instalacion-option-content">
+            <span class="instalacion-option-icon" aria-hidden="true">
+              <svg *ngIf="inst.id === 'cancha-tenis'" width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.7373 1.6377C17.192 -0.90667 12.5776 -0.43417 9.45103 2.69239C6.48947 5.65395 5.91103 9.94958 8.02134 12.5624L4.99978 15.5802L4.80291 15.3824C4.68103 15.2605 4.53633 15.1638 4.37709 15.0978C4.21784 15.0319 4.04715 14.9979 3.87478 14.9979C3.70241 14.9979 3.53173 15.0319 3.37248 15.0978C3.21323 15.1638 3.06854 15.2605 2.94666 15.3824L0.38447 17.9446C0.262579 18.0665 0.165889 18.2112 0.099921 18.3704C0.0339534 18.5296 0 18.7003 0 18.8727C0 19.0451 0.0339534 19.2158 0.099921 19.375C0.165889 19.5343 0.262579 19.679 0.38447 19.8008L1.57416 20.9915C1.69605 21.1135 1.84081 21.2103 2.00014 21.2763C2.15948 21.3424 2.33027 21.3764 2.50275 21.3764C2.67523 21.3764 2.84603 21.3424 3.00536 21.2763C3.1647 21.2103 3.30945 21.1135 3.43134 20.9915L5.99259 18.4302C6.11463 18.3083 6.21144 18.1636 6.27749 18.0042C6.34354 17.8449 6.37753 17.6741 6.37753 17.5016C6.37753 17.3291 6.34354 17.1583 6.27749 16.999C6.21144 16.8397 6.11463 16.6949 5.99259 16.573L5.79572 16.3761L8.81259 13.3555C9.85978 14.1993 11.1788 14.6165 12.5748 14.6165C14.656 14.6165 16.907 13.6968 18.6798 11.924C21.8092 8.79739 22.2817 4.18302 19.7373 1.6377ZM5.19666 17.6333L2.63541 20.1955C2.61799 20.2129 2.59731 20.2268 2.57455 20.2362C2.55179 20.2457 2.52739 20.2505 2.50275 20.2505C2.47811 20.2505 2.45371 20.2457 2.43095 20.2362C2.40819 20.2268 2.38751 20.2129 2.37009 20.1955L1.18041 19.0058C1.16297 18.9884 1.14914 18.9677 1.13971 18.945C1.13027 18.9222 1.12542 18.8978 1.12542 18.8732C1.12542 18.8485 1.13027 18.8241 1.13971 18.8014C1.14914 18.7786 1.16297 18.7579 1.18041 18.7405L3.74166 16.1783C3.75918 16.161 3.77996 16.1472 3.8028 16.1379C3.82564 16.1285 3.85011 16.1238 3.87478 16.124C3.9243 16.1239 3.97182 16.1435 4.00697 16.1783L4.60228 16.7727L5.19666 17.3671C5.21409 17.3845 5.22792 17.4052 5.23736 17.4279C5.24679 17.4507 5.25165 17.4751 5.25165 17.4997C5.25165 17.5244 5.24679 17.5488 5.23736 17.5715C5.22792 17.5943 5.21409 17.615 5.19666 17.6324V17.6333ZM20.0945 4.49989H16.8807V1.28052C17.6616 1.4676 18.3754 1.86752 18.9427 2.43584C19.5101 3.00416 19.9087 3.71864 20.0945 4.49989ZM15.5532 1.12489C15.6207 1.12489 15.6882 1.12489 15.7548 1.12489V4.49989H12.3751V1.92833C13.3555 1.41072 14.4447 1.13281 15.5532 1.11739V1.12489ZM15.7548 5.62489V8.99989H12.3751V5.62489H15.7548ZM10.247 3.48833C10.559 3.17557 10.8944 2.88693 11.2501 2.62489V4.49989H9.37509C9.63952 4.14098 9.93099 3.80281 10.247 3.48833ZM8.68603 5.62489H11.2501V8.99989H7.87509C7.84322 7.90114 8.11697 6.7302 8.68603 5.62489ZM8.03916 10.1249H11.2501V13.3386C10.4704 13.1515 9.7577 12.7523 9.19096 12.185C8.62423 11.6178 8.22557 10.9048 8.03916 10.1249ZM12.3788 13.4999V10.1249H15.7538V12.6918C14.6448 13.258 13.4738 13.5318 12.3751 13.4933L12.3788 13.4999ZM17.8867 11.1346C17.5738 11.4478 17.2375 11.7368 16.8807 11.999V10.1249H18.7501C18.4878 10.4804 18.1992 10.8157 17.8867 11.128V11.1346ZM19.4476 8.99989H16.8807V5.62489H20.2557C20.2904 6.7152 20.0167 7.88614 19.4476 8.99989Z" fill="black"/>
+              </svg>
+              <svg *ngIf="inst.id === 'cancha-padel'" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3247 2.80125C14.9874 1.46378 13.2835 0.552916 11.4285 0.18384C9.57355 -0.185236 7.65078 0.00405715 5.90339 0.727782C4.156 1.45151 2.66246 2.67716 1.61166 4.24973C0.560864 5.8223 0 7.67116 0 9.5625C0 11.4538 0.560864 13.3027 1.61166 14.8753C2.66246 16.4479 4.156 17.6735 5.90339 18.3972C7.65078 19.1209 9.57355 19.3102 11.4285 18.9412C13.2835 18.5721 14.9874 17.6612 16.3247 16.3238C17.2192 15.4396 17.9295 14.3867 18.4142 13.2261C18.8989 12.0655 19.1485 10.8203 19.1485 9.5625C19.1485 8.30474 18.8989 7.05948 18.4142 5.89888C17.9295 4.73827 17.2192 3.68539 16.3247 2.80125ZM3.59061 3.59625C5.02558 2.15981 6.93218 1.2916 8.95779 1.15219C8.81809 3.17676 7.9479 5.0817 6.50904 6.51282C5.07678 7.95152 3.17091 8.82134 1.1456 8.96063C1.28585 6.93586 2.15436 5.03032 3.59061 3.59625ZM1.14092 10.0903C3.46831 9.9525 5.66382 8.96385 7.30967 7.3125C8.96194 5.66988 9.95232 3.47691 10.0922 1.15125C12.1437 1.27544 14.0789 2.14617 15.5326 3.59916C16.9863 5.05215 17.8579 6.98693 17.9831 9.03844C15.6586 9.18385 13.4671 10.1726 11.8198 11.8192C10.1726 13.4657 9.18293 15.6568 9.03654 17.9813C6.98353 17.8581 5.04671 16.9873 3.59198 15.5334C2.13724 14.0796 1.26531 12.1433 1.14092 10.0903ZM15.5287 15.5278C14.0936 16.9638 12.187 17.8317 10.1615 17.9709C10.3067 15.9475 11.1764 14.0441 12.6114 12.6101C14.0463 11.176 15.9502 10.3073 17.9737 10.1634C17.8337 12.1885 16.9652 14.0944 15.5287 15.5288V15.5278Z" fill="black"/>
+              </svg>
+              <svg *ngIf="inst.id === 'cancha-futbol-5'" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.5625 0C7.67122 0 5.82241 0.560831 4.24986 1.61157C2.67732 2.66231 1.45167 4.15577 0.727906 5.90309C0.00414312 7.65041 -0.185226 9.57311 0.183745 11.4281C0.552716 13.283 1.46346 14.9869 2.8008 16.3242C4.13814 17.6615 5.84201 18.5723 7.69695 18.9413C9.5519 19.3102 11.4746 19.1209 13.2219 18.3971C14.9692 17.6733 16.4627 16.4477 17.5134 14.8751C18.5642 13.3026 19.125 11.4538 19.125 9.5625C19.122 7.02728 18.1136 4.59675 16.3209 2.80408C14.5283 1.01141 12.0977 0.00297736 9.5625 0ZM16.8441 13.8206H13.4897L12.5072 12.4688L13.7531 8.83875L15.3469 8.32219L17.9663 10.3312C17.8543 11.5629 17.4711 12.7546 16.8441 13.8206ZM5.63532 13.8206H2.28094C1.65461 12.7544 1.27202 11.5628 1.16063 10.3312L3.78 8.32219L5.37375 8.83875L6.61782 12.4688L5.63532 13.8206ZM2.34375 5.19562L3.0225 7.48406L1.1475 8.92219C1.24681 7.60305 1.65672 6.3261 2.34375 5.19562ZM7.64625 12L6.48282 8.61188L9.5625 6.495L12.6422 8.61188L11.4788 12H7.64625ZM16.1016 7.48406L16.7813 5.19562C17.468 6.32618 17.8775 7.60313 17.9766 8.92219L16.1016 7.48406ZM15.9459 4.05094L15 7.25156L13.4063 7.77L10.125 5.52V3.85875L13.0219 1.8675C14.1437 2.37408 15.1416 3.1192 15.9459 4.05094ZM11.7113 1.40625L9.5625 2.88L7.41375 1.40625C8.82236 1.03626 10.3026 1.03626 11.7113 1.40625ZM6.10407 1.86656L9 3.85875V5.51625L5.71875 7.76625L4.125 7.24781L3.17907 4.05094C3.98381 3.11897 4.98196 2.37356 6.10407 1.86656ZM3.07032 14.9456H5.52469L6.38625 17.3831C5.0974 16.8555 3.95849 16.0183 3.07032 14.9456ZM7.72782 17.7984L6.55125 14.4741L7.53188 13.125H11.5931L12.5738 14.4741L11.3972 17.7984C10.1888 18.0672 8.93618 18.0672 7.72782 17.7984ZM12.7388 17.3784L13.6003 14.9409H16.0547C15.1665 16.0136 14.0276 16.8508 12.7388 17.3784Z" fill="black"/>
+              </svg>
+              <svg *ngIf="inst.id === 'sum'" width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.2406 7.88447L9.74063 0.38447C9.61875 0.262579 9.47405 0.165889 9.31481 0.0999211C9.15556 0.0339534 8.98487 0 8.8125 0C8.64013 0 8.46945 0.0339534 8.3102 0.0999211C8.15095 0.165889 8.00626 0.262579 7.88438 0.38447L0.384379 7.88447C0.262171 8.00611 0.165281 8.15076 0.0993065 8.31007C0.0333318 8.46937 -0.000419192 8.64017 3.92959e-06 8.8126V17.8126C3.92959e-06 17.9618 0.0592671 18.1049 0.164756 18.2103C0.270246 18.3158 0.41332 18.3751 0.562504 18.3751H6.5625C6.71169 18.3751 6.85476 18.3158 6.96025 18.2103C7.06574 18.1049 7.125 17.9618 7.125 17.8126V12.3751H10.5V17.8126C10.5 17.9618 10.5593 18.1049 10.6648 18.2103C10.7702 18.3158 10.9133 18.3751 11.0625 18.3751H17.0625C17.2117 18.3751 17.3548 18.3158 17.4603 18.2103C17.5657 18.1049 17.625 17.9618 17.625 17.8126V8.8126C17.6254 8.64017 17.5917 8.46937 17.5257 8.31007C17.4597 8.15076 17.3628 8.00611 17.2406 7.88447ZM16.5 17.2501H11.625V11.8126C11.625 11.6634 11.5657 11.5203 11.4603 11.4148C11.3548 11.3094 11.2117 11.2501 11.0625 11.2501H6.5625C6.41332 11.2501 6.27025 11.3094 6.16476 11.4148C6.05927 11.5203 6 11.6634 6 11.8126V17.2501H1.125V8.8126C1.12486 8.78792 1.12959 8.76346 1.13892 8.74061C1.14825 8.71777 1.162 8.69699 1.17938 8.67947L8.67938 1.17947C8.69681 1.1619 8.71755 1.14795 8.7404 1.13843C8.76324 1.12891 8.78775 1.12401 8.8125 1.12401C8.83726 1.12401 8.86176 1.12891 8.88461 1.13843C8.90746 1.14795 8.9282 1.1619 8.94563 1.17947L16.4456 8.67947C16.463 8.69699 16.4768 8.71777 16.4861 8.74061C16.4954 8.76346 16.5001 8.78792 16.5 8.8126V17.2501Z" fill="black"/>
+              </svg>
+            </span>
+            <div class="instalacion-option-main">
+              <span class="instalacion-option-name">{{ inst.nombre }}</span>
+            </div>
+          </div>
+          <span class="instalacion-option-badge">Máx. {{ inst.maxPersonas }} pers.</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Calendario Limpio  -->
+  <section class="calendar-section" aria-label="Seleccionar fecha de reserva">
+    <div class="calendar-card">
+      <header class="calendar-header">
+        <button
+          type="button"
+          class="calendar-nav-btn"
+          (click)="cambiarMes(-1)"
+          aria-label="Mes anterior">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18L9 12L15 6" stroke="#2C2C2C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+
+        <h3 class="calendar-month-title">{{ tituloMesVisible }}</h3>
+
+        <button
+          type="button"
+          class="calendar-nav-btn"
+          (click)="cambiarMes(1)"
+          aria-label="Mes siguiente">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M9 18L15 12L9 6" stroke="#2C2C2C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="calendar-weekdays">
+        <span class="weekday-label" *ngFor="let diaSemana of calendarioDias">{{ diaSemana }}</span>
+      </div>
+
+      <div class="calendar-days-grid">
+        <button
+          *ngFor="let dia of diasDelCalendario; trackBy: trackByFecha"
+          type="button"
+          class="calendar-day-btn"
+          [class.outside-month]="!dia.mesActual"
+          [class.selected]="dia.seleccionado"
+          [class.today]="dia.hoy && !dia.seleccionado"
+          [class.past]="dia.fechaPasada"
+          [disabled]="dia.fechaPasada"
+          [attr.aria-pressed]="dia.seleccionado"
+          [attr.aria-label]="dia.fecha"
+          (click)="seleccionarFecha(dia)">
+          {{ dia.numero }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Horarios Dinámicos según la Instalación -->
+  <section *ngIf="!instalacionSeleccionada.esDiaCompleto" class="horario-section" aria-labelledby="horario-heading">
+    <div class="horario-header-row">
+      <h2 id="horario-heading" class="section-title">Horario</h2>
+      <span class="horario-caption">
+        {{ instalacionSeleccionada.esDiaCompleto ? 'Turno de día completo' : 'Turnos de 09:00 a 00:00 hs' }}
+      </span>
+    </div>
+
+    <div class="horario-card">
+      <!-- Grilla de rangos horarios para canchas (9am a 12pm/medianoche) -->
+      <div
+        class="horarios-grid"
+        [class.full-day-grid]="instalacionSeleccionada.esDiaCompleto">
+        <button
+          *ngFor="let rango of rangosHorarios; trackBy: trackByHorario"
+          type="button"
+          class="horario-pill"
+          [class.selected]="horarioSeleccionado === rango"
+          [attr.aria-pressed]="horarioSeleccionado === rango"
+          (click)="seleccionarHorario(rango)">
+          {{ rango }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detalles de Capacidad y Turno -->
+  <section class="detalles-section" aria-labelledby="detalles-heading">
+    <h2 id="detalles-heading" class="section-title">Detalles</h2>
+    <p class="detalles-personas">
+      Cantidad de personas: {{ instalacionSeleccionada.maxPersonas }}
+      ({{ instalacionSeleccionada.esCapacidadVariablePorBarrio ? 'Máximo según el barrio' : 'Máximo por defecto' }})
+    </p>
+  </section>
+
+  <!-- Mensaje de confirmación visual -->
+  <div *ngIf="mensajeConfirmacion" class="reserva-feedback" role="status">
+    {{ mensajeConfirmacion }}
+  </div>
+  <div *ngIf="mensajeErrorReserva" class="reserva-feedback reserva-feedback-error" role="alert">
+    {{ mensajeErrorReserva }}
+  </div>
+
+  <!--Botón Final ("Confirmar Reserva" o "Señar" para SUM) -->
+  <div class="footer-action">
+    <button
+      type="button"
+      class="btn-submit-reserva"
+      [class.btn-senar]="instalacionSeleccionada.tipoAccion === 'senar'"
+      [disabled]="procesandoReserva"
+      (click)="procesarReserva()">
+      {{ procesandoReserva ? 'Procesando…' : textoBotonPrincipal }}
+    </button>
+  </div>
+
+</div>

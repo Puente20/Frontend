@@ -1,0 +1,236 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: #f7f4ef;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1e1e1e;
+}
+
+.screen-container {
+  position: relative;
+  max-width: 412px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 28px 20px 36px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-error {
+  margin-top: 12px;
+  color: #9b2c2c;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Encabezado: mantiene el logo en la misma coordenada superior */
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 76px;
+  margin-bottom: 24px;
+}
+
+.btn-back {
+  position: absolute;
+  z-index: 1;
+  top: 40px;   
+  left: 0px; 
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #2f2f2d;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-back:active {
+  transform: scale(0.96);
+}
+
+.logo-wrapper {
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+}
+
+.zentry-logo {
+  position: absolute;
+  top: 0px;   
+  left: 0px;  
+  display: block;
+  width: 250px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Título y fecha */
+.title-section {
+  margin-top:20px;
+  margin-bottom: 22px;
+}
+
+.main-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0d0d0d;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.2px;
+}
+
+.subtitle-date {
+  font-size: 13.5px;
+  color: #3a3a38;
+  margin: 0;
+}
+
+/* Tipo de invitación */
+.type-section {
+  margin-bottom: 22px;
+}
+
+.section-label {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: #141414;
+  margin-bottom: 14px;
+}
+
+.toggle-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #d6d6d6;
+  border-radius: 999px;
+  padding: 4px;
+  width: 92%;
+  margin: 0 auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.toggle-pill::before {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 4px);
+  background-color: #333331;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  content: '';
+  transition: transform 0.35s ease;
+}
+
+.toggle-pill.is-concurrent::before {
+  transform: translateX(100%);
+}
+
+.toggle-option {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: #3d3d3b;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  padding: 9px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-option.active {
+  color: #e6e6e4;
+}
+
+
+
+/* Tarjeta del formulario */
+.form-card {
+  background-color: #f6f4ef;
+  border: 1px solid #4a4946;
+  border-radius: 12px;
+  padding: 18px 16px 24px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-label {
+  font-size: 15px;
+  font-weight: 400;
+  color: #333331;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+  gap: 10px;
+}
+
+.input-icon {
+  flex-shrink: 0;
+}
+
+.form-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14.5px;
+  color: #262624;
+}
+
+.form-input::placeholder {
+  color: #3d3d3b;
+  opacity: 0.85;
+}
+
+/* Botón inferior */
+.footer-action {
+  margin-top: 72px;
+}
+
+.btn-generar {
+  width: 100%;
+  height: 54px;
+  background-color: #2f2f2d;
+  color: #e4e4e2;
+  border: none;
+  border-radius: 16px;
+  font-size: 15.5px;
+  font-weight: 400;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn-generar:hover {
+  background-color: #242422;
+}
+
+.btn-generar:active {
+  transform: scale(0.98);
+}

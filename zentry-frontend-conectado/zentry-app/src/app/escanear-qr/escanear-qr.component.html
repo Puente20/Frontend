@@ -1,0 +1,46 @@
+<main class="qr-wrapper">
+
+  <!-- Encabezado -->
+  <header class="header">
+
+    <button
+      type="button"
+      class="btn-volver"
+      (click)="volver()">
+      ← Volver
+    </button>
+
+    <img
+      src="/logo-zentry-negro.png"
+      alt="Zentry"
+      class="logo">
+
+  </header>
+
+  <!-- Titulo principal -->
+  <section class="titulo">
+
+    <h1>Escanear QR de ingreso</h1>
+
+    <p>
+      Enfocá el código QR del visitante dentro del recuadro.
+    </p>
+
+  </section>
+
+  <section class="camara">
+    <video #camaraVideo class="video-camara" autoplay muted playsinline></video>
+    <div class="marco-qr" aria-hidden="true"></div>
+  </section>
+
+  <p class="mensaje" role="status">{{ estadoEscaneo }}</p>
+  <p *ngIf="mensajeError" class="aviso" role="alert">{{ mensajeError }}</p>
+  <button
+    *ngIf="detectorDisponible && !escaneando && !validacionEnCurso"
+    type="button"
+    class="btn-reintentar"
+    (click)="reintentarEscaneo()">
+    Escanear otro QR
+  </button>
+
+</main>

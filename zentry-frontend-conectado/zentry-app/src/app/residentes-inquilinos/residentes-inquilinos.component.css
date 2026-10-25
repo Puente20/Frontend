@@ -1,0 +1,471 @@
+:host {
+  display: block;
+  width: 100%;
+  max-width: 393px;
+  height: 852px;
+  max-height: 852px;
+  overflow: hidden;
+  background-color: #F7F4EF;
+  font-family: 'Inter', sans-serif;
+  color: #1E1E1E;
+}
+
+.residentes-inquilinos-wrapper {
+  width: 100%;
+  max-width: 393px;
+  height: 852px;
+  max-height: 852px;
+  margin: 0 auto;
+  padding: 46px 26px 32px 26px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: #F7F4EF;
+  overflow: hidden;
+}
+
+/* 1. Encabezado de perfil */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  position: relative;
+  top: 16px;
+  flex-shrink: 0;
+}
+
+.avatar-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.admin-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.admin-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #2B2B29;
+  margin: 2px 0 0 0;
+  line-height: 1.25;
+}
+
+/* 2. Título y fecha */
+.panel-heading {
+  margin-bottom: 18px;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 5px 0;
+  letter-spacing: -0.3px;
+}
+
+.panel-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #2B2B29;
+  margin: 0;
+}
+
+.panel-subtitle em {
+  font-style: italic;
+}
+
+/* 3. Buscador superior */
+.search-section {
+  width: 100%;
+  margin-bottom: 22px;
+  flex-shrink: 0;
+}
+
+.search-pill {
+  width: 100%;
+  height: 40px;
+  background-color: #FFFFFF;
+  border: 1.2px solid #2C2C2C;
+  border-radius: 999px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.search-pill:focus-within {
+  border-color: #000000;
+  box-shadow: 0 0 0 2px rgba(44, 44, 44, 0.12);
+}
+
+.search-icon {
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #1E1E1E;
+}
+
+.search-input::placeholder {
+  color: #5A5A57;
+}
+
+.btn-clear-search {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: #EFECE6;
+  color: #2C2C2C;
+  font-size: 15px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.btn-clear-search:hover {
+  background: #D9D9D9;
+}
+
+/* 4. Selector Propietarios / Inquilinos */
+.role-toggle-section {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+.toggle-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 292px;
+  max-width: 92%;
+  height: 40px;
+  padding: 4px;
+  background-color: #D9D9D9;
+  border-radius: 999px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+  box-sizing: border-box;
+}
+
+.toggle-pill.is-inquilinos::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 50%;
+  width: calc(50% - 4px);
+  background-color: #2C2C2C;
+  border-radius: 999px;
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-option {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  color: #2B2B29;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.toggle-option.active {
+  color: #E8E6E3;
+}
+
+/* 5. Contenedor scrolleable de tarjetas de inquilinos */
+.residents-scroll-container {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 4px 16px 4px;
+  margin: 0 -4px;
+  box-sizing: content-box;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+
+.residents-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.residents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+}
+
+.resident-card {
+  width: 100%;
+  min-height: 118px;
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.resident-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.11), 0 3px 6px rgba(0, 0, 0, 0.05);
+}
+
+.resident-card-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.resident-avatar {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.resident-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.resident-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 4px 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resident-lote {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #2B2B29;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.btn-whatsapp {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-whatsapp svg {
+  transition: transform 0.16s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: transparent;
+}
+
+.btn-whatsapp:hover svg {
+  transform: scale(1.12);
+}
+
+.btn-whatsapp:active svg {
+  transform: scale(0.96);
+}
+
+.empty-state-card {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+}
+
+.empty-state-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #5A5A57;
+  margin: 0;
+}
+
+/* 6. Barra de navegación inferior */
+.bottom-nav-container {
+  margin-top: auto;
+  padding-top: 28px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bottom-nav {
+  width: 100%;
+  max-width: 312px;
+  height: 52px;
+  background-color: #2C2C2C;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.nav-item {
+  position: relative;
+  width: 56px;
+  height: 52px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #FFFFFF;
+  padding: 0;
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s ease, color 0.5s ease;
+}
+
+.nav-icon-wrapper svg {
+  width: 28px;
+  height: 28px;
+}
+
+.nav-item.active .nav-icon-wrapper {
+  width: 46px;
+  height: 46px;
+  background-color: #000000;
+  border-radius: 50%;
+  color: #31C770;
+  transform: translateY(-22px);
+}
+
+.nav-notch {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background-color: #F7F4EF;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.nav-notch::before,
+.nav-notch::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  background: transparent;
+}
+
+.nav-notch::before {
+  left: -8px;
+  border-top-right-radius: 12px;
+  box-shadow: 4px -4px 0 2px #F7F4EF;
+}
+
+.nav-notch::after {
+  right: -8px;
+  border-top-left-radius: 12px;
+  box-shadow: -4px -4px 0 2px #F7F4EF;
+}
+
+@media (max-width: 480px) {
+  :host,
+  .residentes-inquilinos-wrapper {
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+}

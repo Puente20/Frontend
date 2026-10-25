@@ -1,0 +1,281 @@
+.admin-wrapper {
+  min-height: 852px;
+  width: 100%;
+  max-width: 393px;
+  margin: 0 auto;
+  padding: 46px 26px 32px 26px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  background-color: #F7F4EF;
+}
+
+/* 1. Encabezado de perfil */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  position: relative;
+  top: 16px;
+}
+
+.avatar-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.admin-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.admin-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #2B2B29;
+  margin: 2px 0 0 0;
+  line-height: 1.25;
+}
+
+/* 2. Título y fecha */
+.panel-heading {
+  margin-bottom: 24px;
+}
+
+.panel-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 5px 0;
+  letter-spacing: -0.3px;
+}
+
+.panel-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #2B2B29;
+  margin: 0;
+}
+
+.panel-subtitle em {
+  font-style: italic;
+}
+
+/* 3. Tarjetas de gestión */
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100%;
+}
+
+.management-card {
+  width: 100%;
+  min-height: 150px;
+  background-color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  padding: 22px 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  text-align: left;
+  cursor: pointer;
+  box-sizing: border-box;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+.management-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.06);
+}
+
+.management-card:active {
+  transform: translateY(1px);
+}
+
+.card-icon-box {
+  width: 80px;
+  height: 8 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #000000;
+}
+
+.card-icon {
+  width: 70px;
+  height: 70px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.card-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0 0 6px 0;
+  line-height: 1.2;
+}
+
+.card-description {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #1E1E1E;
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Subvistas de perfil o ajustes */
+.secondary-view {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.secondary-card {
+  cursor: default;
+}
+
+.btn-logout {
+  margin-top: 14px;
+  padding: 9px 16px;
+  background-color: #2C2C2C;
+  color: #F7F4EF;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+/* 4. Barra de navegación inferior */
+.bottom-nav-container {
+  margin-top: 50px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.bottom-nav {
+  width: 100%;
+  max-width: 312px;
+  height: 52px;
+  background-color: #2C2C2C;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.nav-item {
+  position: relative;
+  width: 56px;
+  height: 52px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #FFFFFF;
+  padding: 0;
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s ease, color 0.5s ease;
+}
+
+.nav-icon-wrapper svg {
+  width: 28px;
+  height: 28px;
+}
+
+.nav-item.active .nav-icon-wrapper {
+  width: 46px;
+  height: 46px;
+  background-color: #000000;
+  border-radius: 50%;
+  color: #31C770;
+  transform: translateY(-22px);
+}
+
+.nav-notch {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background-color: #F7F4EF;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.nav-notch::before,
+.nav-notch::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  background: transparent;
+}
+
+.nav-notch::before {
+  left: -8px;
+  border-top-right-radius: 12px;
+  box-shadow: 4px -4px 0 2px #F7F4EF;
+}
+
+.nav-notch::after {
+  right: -8px;
+  border-top-left-radius: 12px;
+  box-shadow: -4px -4px 0 2px #F7F4EF;
+}

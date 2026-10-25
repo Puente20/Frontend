@@ -1,0 +1,104 @@
+.recu-contra-Container {
+    width: 100%;
+    min-height: 100%;
+    padding: 72px 44px 42px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    background-color: #f7f4ef;
+}
+
+.recu-contra-header {
+    width: calc(100% + 88px);
+}
+
+.zentry-logo {
+    display: block;
+    width: min(440px, 100%);
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto 44px;
+}
+.formulario {
+    width: 100%;
+    max-width: 305px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    color: #2c2c2c;
+}
+
+.formulario > p:first-child {
+    margin: 0 0 24px;
+    font-size: 16px;
+    line-height: 1.35;
+    text-align: center;
+}
+
+.formulario label {
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.formulario input {
+    width: 100%;
+    height: 46px;
+    padding: 0 14px;
+    border: 1px solid #d5d1ca;
+    border-radius: 8px;
+    background: #fff;
+    color: #2c2c2c;
+    font: inherit;
+}
+
+.formulario input:focus {
+    outline: 2px solid #77736d;
+    outline-offset: 2px;
+}
+
+.formulario button {
+    width: 100%;
+    min-height: 42px;
+    margin-top: 24px;
+    border: 0;
+    border-radius: 8px;
+    background: #2c2c2c;
+    color: #f5f2eb;
+    font: inherit;
+    cursor: pointer;
+}
+
+.formulario button.btn-volver {
+    margin-top: 10px;
+    border: 1px solid #2c2c2c;
+    background: #f7f4ef;
+    color: #2c2c2c;
+}
+
+.formulario button.btn-volver:hover {
+    background: #eae6df;
+}
+
+.formulario button:active {
+    background: #444;
+}
+
+.formulario button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.formulario .error {
+    margin-top: 8px;
+    color: #9b2c2c;
+    font-size: 12px;
+}
+
+.formulario .mensaje {
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 1.4;
+    text-align: center;
+}

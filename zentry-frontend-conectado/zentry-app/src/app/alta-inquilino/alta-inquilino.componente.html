@@ -1,0 +1,247 @@
+<div class="alta-inquilino-wrapper">
+  <header class="profile-header">
+    <div class="avatar-circle">
+      <img src="/minilogo-sfondo.png" alt="Logo Zentry" class="avatar-img" />
+    </div>
+    <div class="profile-info">
+      <h2 class="admin-name">{{ adminNombre }}</h2>
+      <p class="admin-role">{{ adminRol }}</p>
+    </div>
+  </header>
+
+  <section class="panel-heading">
+    <h1 class="panel-title">Alta de inquilino</h1>
+    <p class="panel-subtitle">Fecha, {{ fechaActual }} - <em>{{ nombreBarrio }}</em></p>
+  </section>
+
+  <section class="role-toggle-section" aria-label="Tipo de residente">
+    <div class="toggle-pill is-inquilino">
+      <button type="button" class="toggle-option" (click)="volverAPropietarios()">Propietario</button>
+      <button type="button" class="toggle-option active" aria-current="page">Inquilino</button>
+    </div>
+  </section>
+
+  <form class="form-card" (ngSubmit)="darAlta()" novalidate>
+    <h2 class="card-section-title">Datos personales</h2>
+
+    <div class="form-group">
+      <label for="inquilino-nombre" class="input-label">Nombre</label>
+      <input id="inquilino-nombre" name="nombre" type="text" class="pill-input"
+        [(ngModel)]="inquilino.nombre" autocomplete="given-name" required />
+    </div>
+
+    <div class="form-group">
+      <label for="inquilino-apellido" class="input-label">Apellido</label>
+      <input id="inquilino-apellido" name="apellido" type="text" class="pill-input"
+        [(ngModel)]="inquilino.apellido" autocomplete="family-name" required />
+    </div>
+
+    <div class="form-group">
+      <label for="inquilino-dni" class="input-label">DNI</label>
+      <input id="inquilino-dni" name="dni" type="text" inputmode="numeric" class="pill-input"
+        [(ngModel)]="inquilino.dni" required />
+    </div>
+
+    <div class="form-group">
+      <label for="inquilino-email" class="input-label">Email</label>
+      <input id="inquilino-email" name="email" type="email" class="pill-input"
+        [(ngModel)]="inquilino.email" autocomplete="email" required />
+    </div>
+
+    <div class="form-group">
+      <label for="inquilino-telefono" class="input-label">Teléfono celular</label>
+      <input id="inquilino-telefono" name="telefono" type="tel" inputmode="tel" class="pill-input"
+        [(ngModel)]="inquilino.telefono" autocomplete="tel" required />
+    </div>
+
+    <div class="form-group lote-select-container">
+      <label for="inquilino-lote" class="input-label">Asignación de lote</label>
+      <div class="lote-input-pill" [class.dropdown-open]="listaLotesAbierta">
+        <input
+          id="inquilino-lote"
+          name="lote"
+          type="text"
+          class="lote-text-input"
+          [ngModel]="loteFiltro"
+          (ngModelChange)="onLoteInputChange($event)"
+          (focus)="onFocusLote()"
+          autocomplete="off"
+          [attr.aria-expanded]="listaLotesAbierta"
+          aria-controls="inquilino-lotes-listbox"
+          required />
+        <button
+          type="button"
+          class="btn-circle-chevron"
+          [class.rotated]="listaLotesAbierta"
+          (click)="toggleListaLotes($event)"
+          aria-label="Desplegar lista de lotes">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9L12 15L18 9" stroke="#2C2C2C" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <ul
+        *ngIf="listaLotesAbierta"
+        #lotesDropdownList
+        id="inquilino-lotes-listbox"
+        class="lotes-dropdown"
+        role="listbox"
+        aria-label="Lista de lotes del 1 al 100">
+        <li
+          *ngFor="let lote of lotesOrdenados"
+          role="option"
+          class="lote-option"
+          [class.top-match]="numeroLoteDestacado === lote"
+          [class.selected]="inquilino.lote === ('' + lote)"
+          [attr.aria-selected]="inquilino.lote === ('' + lote)"
+          (click)="seleccionarLote(lote)">
+          <span class="lote-option-label">Lote {{ lote }}</span>
+          <span *ngIf="numeroLoteDestacado === lote" class="lote-match-badge">#{{ lote }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="form-group">
+      <span class="input-label">Patente/s</span>
+      <div class="patentes-list">
+        <div class="patente-row" *ngFor="let patente of patentes; let i = index; trackBy: trackByIndex">
+          <input [id]="'inquilino-patente-' + i" [name]="'patente-' + i" type="text"
+            class="pill-input patente-input" [(ngModel)]="patentes[i]" autocomplete="off"
+            [attr.aria-label]="'Patente ' + (i + 1)" />
+          <button *ngIf="i === 0" type="button" class="btn-circle"
+            (click)="agregarPatente()" aria-label="Agregar otra patente">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="12" y1="6" x2="12" y2="18" />
+              <line x1="6" y1="12" x2="18" y2="12" />
+            </svg>
+          </button>
+          <button *ngIf="i > 0" type="button" class="btn-circle"
+            (click)="quitarPatente(i)" [attr.aria-label]="'Eliminar patente ' + (i + 1)">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <line x1="6" y1="12" x2="18" y2="12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="card-section-title contract-title">Duración del contrato</h2>
+
+    <div class="date-row">
+      <div class="form-group date-field">
+        <label for="fecha-inicio-contrato" class="input-label">Fecha de inicio</label>
+        <div class="date-input-wrapper">
+          <input
+            id="fecha-inicio-contrato"
+            name="fechaInicioContrato"
+            type="text"
+            class="form-input date-input"
+            placeholder="dd/mm/aaaa"
+            inputmode="numeric"
+            maxlength="10"
+            [ngModel]="fechaInicioTexto"
+            (ngModelChange)="actualizarFecha('inicio', $event)"
+            required />
+          <button
+            type="button"
+            class="calendar-button"
+            aria-label="Elegir fecha de inicio"
+            aria-controls="contract-calendar-start"
+            [attr.aria-expanded]="calendarioAbierto === 'inicio'"
+            (click)="abrirCalendario('inicio')">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+              <line x1="16" y1="3" x2="16" y2="7"></line>
+              <line x1="8" y1="3" x2="8" y2="7"></line>
+              <line x1="3" y1="11" x2="21" y2="11"></line>
+            </svg>
+          </button>
+          <section *ngIf="calendarioAbierto === 'inicio'" id="contract-calendar-start"
+            class="calendar-popup" role="dialog" aria-label="Calendario de fecha de inicio del contrato">
+            <header class="calendar-header">
+              <button type="button" class="calendar-nav" aria-label="Mes anterior"
+                [disabled]="mesAnteriorDeshabilitado()" (click)="cambiarMes(-1)">
+                <span aria-hidden="true">‹</span>
+              </button>
+              <h3>{{ tituloMesVisible }}</h3>
+              <button type="button" class="calendar-nav" aria-label="Mes siguiente"
+                [disabled]="mesSiguienteDeshabilitado()" (click)="cambiarMes(1)">
+                <span aria-hidden="true">›</span>
+              </button>
+            </header>
+            <div class="calendar-grid">
+              <span class="calendar-weekday" *ngFor="let dia of calendarioDias">{{ dia }}</span>
+              <button *ngFor="let dia of diasDelCalendario" type="button" class="calendar-day"
+                [class.outside-month]="!dia.mesActual" [class.today]="dia.hoy"
+                [class.selected]="dia.seleccionado" [disabled]="dia.deshabilitado"
+                [attr.aria-pressed]="dia.seleccionado" (click)="seleccionarDia(dia.fecha)">
+                {{ dia.numero }}
+              </button>
+            </div>
+            <p class="calendar-hint">Selecciona una fecha de inicio</p>
+          </section>
+        </div>
+      </div>
+
+      <div class="form-group date-field">
+        <label for="fecha-fin-contrato" class="input-label">Fecha de fin</label>
+        <div class="date-input-wrapper">
+          <input
+            id="fecha-fin-contrato"
+            name="fechaFinContrato"
+            type="text"
+            class="form-input date-input"
+            placeholder="dd/mm/aaaa"
+            inputmode="numeric"
+            maxlength="10"
+            [ngModel]="fechaFinTexto"
+            (ngModelChange)="actualizarFecha('fin', $event)"
+            required />
+          <button
+            type="button"
+            class="calendar-button"
+            aria-label="Elegir fecha de fin"
+            aria-controls="contract-calendar-end"
+            [attr.aria-expanded]="calendarioAbierto === 'fin'"
+            (click)="abrirCalendario('fin')">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+              <line x1="16" y1="3" x2="16" y2="7"></line>
+              <line x1="8" y1="3" x2="8" y2="7"></line>
+              <line x1="3" y1="11" x2="21" y2="11"></line>
+            </svg>
+          </button>
+          <section *ngIf="calendarioAbierto === 'fin'" id="contract-calendar-end"
+            class="calendar-popup" role="dialog" aria-label="Calendario de fecha de fin del contrato">
+            <header class="calendar-header">
+              <button type="button" class="calendar-nav" aria-label="Mes anterior"
+                [disabled]="mesAnteriorDeshabilitado()" (click)="cambiarMes(-1)">
+                <span aria-hidden="true">‹</span>
+              </button>
+              <h3>{{ tituloMesVisible }}</h3>
+              <button type="button" class="calendar-nav" aria-label="Mes siguiente"
+                [disabled]="mesSiguienteDeshabilitado()" (click)="cambiarMes(1)">
+                <span aria-hidden="true">›</span>
+              </button>
+            </header>
+            <div class="calendar-grid">
+              <span class="calendar-weekday" *ngFor="let dia of calendarioDias">{{ dia }}</span>
+              <button *ngFor="let dia of diasDelCalendario" type="button" class="calendar-day"
+                [class.outside-month]="!dia.mesActual" [class.today]="dia.hoy"
+                [class.selected]="dia.seleccionado" [disabled]="dia.deshabilitado"
+                [attr.aria-pressed]="dia.seleccionado" (click)="seleccionarDia(dia.fecha)">
+                {{ dia.numero }}
+              </button>
+            </div>
+            <p class="calendar-hint">Selecciona una fecha de fin</p>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-dar-alta">Dar alta</button>
+    </div>
+  </form>
+</div>
