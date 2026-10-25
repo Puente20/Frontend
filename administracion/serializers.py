@@ -1,105 +1,68 @@
 from rest_framework import serializers
-
-from base.services import validar_dni_unico_api
-from . import models
-from .services import validar_contacto_proveedor
-
-
-class PasswordSerializer(serializers.Serializer):
-    password = serializers.CharField(
-        write_only=True,
-        error_messages={
-            'required': 'Este campo es requerido.',
-            'blank': 'Este campo es requerido.',
-        },
-    )
-
-
-class CorreoOpcionalField(serializers.EmailField):
-    def run_validation(self, data=serializers.empty):
-        if isinstance(data, str):
-            data = data.strip()
-        return super().run_validation(data)
-
-
-class AccountSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(write_only=True)
-    password = serializers.CharField(write_only=True)
-    email = serializers.EmailField(write_only=True, required=False)
-
-    class Meta:
-        model = models.Account
-        fields = ['id', 'role', 'username', 'password', 'email']
-        read_only_fields = ['id']
-
-    def update(self, instance, validated_data):
-        validated_data.pop('username', None)
-        validated_data.pop('password', None)
-        validated_data.pop('email', None)
-        return super().update(instance, validated_data)
-
-
-class PersonaSerializer(serializers.ModelSerializer):
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        validar_dni_unico_api(
-            attrs.get('dni', getattr(self.instance, 'dni', None)),
-            self.instance,
-        )
-        return attrs
-
-
-class SocioSerializer(PersonaSerializer):
-    class Meta:
-        model = models.Socio
-        fields = ['id', 'nombre', 'apellido', 'dni', 'account', 'tipo', 'lote']
-        read_only_fields = ['account']
-
-
-class GuardiaSerializer(PersonaSerializer):
-    class Meta:
-        model = models.Guardia
-        fields = ['id', 'nombre', 'apellido', 'dni', 'account']
-        read_only_fields = ['account']
-
-
-class AdministradorSerializer(PersonaSerializer):
-    class Meta:
-        model = models.Administrador
-        fields = ['id', 'nombre', 'apellido', 'dni', 'account']
-
-
-class ProveedorSerializer(PersonaSerializer):
-    contacto_telefono = serializers.CharField(max_length=20, allow_blank=True, required=False)
-    contacto_mail = CorreoOpcionalField(max_length=50, allow_blank=True, required=False)
-
-    class Meta:
-        model = models.Proveedor
-        fields = ['id', 'nombre', 'apellido', 'dni', 'contacto_telefono', 'contacto_mail']
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        telefono = attrs.get(
-            'contacto_telefono',
-            getattr(self.instance, 'contacto_telefono', ''),
-        )
-        mail = attrs.get(
-            'contacto_mail',
-            getattr(self.instance, 'contacto_mail', ''),
-        )
-        telefono, mail = validar_contacto_proveedor(telefono, mail)
-        attrs['contacto_telefono'] = telefono
-        attrs['contacto_mail'] = mail
-        return attrs
-
+from .models import Lote, PuntoAcceso, Socio, Administrador, Guardia, Proveedor, Account
 
 class LoteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Lote
+        model = Lote
         fields = ['id', 'numero', 'estado']
-
 
 class PuntoAccesoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.PuntoAcceso
+        model = PuntoAcceso
         fields = ['id', 'nombre', 'tipo', 'estado']
+
+class SocioSerializer(serializers.ModelSerializer):
+    lote_numero = serializers.IntegerField(write_only=True, required=False)
+    lote = serializers.SerializerMethodField(read_only=True)
+    nombre_completo = serializers.SerializerMethodField(read_only=True)
+    rolPropiedad = serializers.CharField(source='rol_propiedad', required=False)
+    fechaInicioContrato = serializers.DateField(source='fecha_inicio_contrato', required=False, allow_null=True)
+    fechaFinContrato = serializers.DateField(source='fecha_fin_contrato', required=False, allow_null=True)
+
+    class Meta:
+        model = Socio
+        fields = [
+            'id',
+            'nombre',
+            'apellido',
+            'nombre_completo',
+            'dni',
+            'email',
+            'telefono',
+            'tipo',
+            'lote',
+            'lote_numero',
+            'rolPropiedad',
+            'patentes',
+            'fechaInicioContrato',
+            'fechaFinContrato',
+            'is_active',
+        ]
+
+    def get_lote(self, obj):
+        return obj.lote.numero if obj.lote else 1
+
+    def get_nombre_completo(self, obj):
+        return f"{obj.nombre} {obj.apellido}".strip()
+
+    def create(self, validated_data):
+        lote_num = validated_data.pop('lote_numero', None)
+        if lote_num is None and 'lote' in self.initial_data:
+            raw_lote = str(self.initial_data.get('lote', '')).replace('Lote', '').strip()
+            if raw_lote.isdigit():
+                lote_num = int(raw_lote)
+        if lote_num:
+            lote_obj, _ = Lote.objects.get_or_create(numero=lote_num, defaults={'estado': 'ocupado'})
+            validated_data['lote'] = lote_obj
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        lote_num = validated_data.pop('lote_numero', None)
+        if lote_num is None and 'lote' in self.initial_data:
+            raw_lote = str(self.initial_data.get('lote', '')).replace('Lote', '').strip()
+            if raw_lote.isdigit():
+                lote_num = int(raw_lote)
+        if lote_num:
+            lote_obj, _ = Lote.objects.get_or_create(numero=lote_num, defaults={'estado': 'ocupado'})
+            validated_data['lote'] = lote_obj
+        return super().update(instance, validated_data)

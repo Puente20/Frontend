@@ -1,17 +1,13 @@
-"""
-URL configuration for zentry project.
-"""
 from django.contrib import admin
-from django.urls import include, path
-
-from administracion.views import cambiar_clave, login
-
+from django.urls import path, include
+from reservas.views import InstalacionBarrioViewSet, ultimos_movimientos_view, alerta_panico_view
 
 urlpatterns = [
-    path('auth/', login),
-    path('auth/cambiar-clave/', cambiar_clave),
     path('admin/', admin.site.urls),
-    path('administracion/', include('administracion.urls')),
-    path('invitaciones/', include('invitaciones.urls')),
-    path('barrios/', include('barrios.urls')),
+    path('api/', include('administracion.urls')),
+    path('api/invitaciones/', include('invitaciones.urls')),
+    path('api/reservas/', include('reservas.urls')),
+    path('api/barrios/instalaciones/', InstalacionBarrioViewSet.as_view({'get': 'list'}), name='barrios-instalaciones'),
+    path('api/movimientos/', ultimos_movimientos_view, name='ultimos-movimientos'),
+    path('api/eventos/panico/', alerta_panico_view, name='eventos-panico'),
 ]

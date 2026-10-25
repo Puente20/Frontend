@@ -1,13 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-
-from .views import InvitacionViewSet, InvitadoViewSet, historial
+from .views import InvitacionViewSet
 
 router = DefaultRouter()
-router.register('invitaciones', InvitacionViewSet, basename='invitacion')
-router.register('invitados', InvitadoViewSet, basename='invitado')
+router.register(r'', InvitacionViewSet, basename='invitaciones')
 
 urlpatterns = [
-    path('historial/', historial, name='historial'),
-    *router.urls,
+    path('', include(router.urls)),
 ]

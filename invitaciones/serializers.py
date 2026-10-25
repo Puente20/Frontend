@@ -1,93 +1,111 @@
-import uuid
+from datetime import datetime
+from django.utils import timezone
 from rest_framework import serializers
-
-from administracion.models import PuntoAcceso
-from administracion.serializers import PuntoAccesoSerializer
-from base.services import validar_dni_unico_api
-from . import models, InvitacionTipo
-
-class InvitadoSerializer(serializers.ModelSerializer):
-    nombre_completo = serializers.SerializerMethodField()
-
-    class Meta:
-        model = models.Invitado
-        fields = ['nombre', 'apellido', 'dni', 'nombre_completo']
-
-    def get_nombre_completo(self, obj):
-        return obj.apellido_nombre()
-
-    def validate(self, attrs):
-        attrs = super().validate(attrs)
-        validar_dni_unico_api(
-            attrs.get('dni', getattr(self.instance, 'dni', None)),
-            self.instance,
-        )
-        return attrs
+from administracion.models import PuntoAcceso, Socio, Lote
+from .models import Invitado, Invitacion, InvitacionHistorico, RegistroAcceso
 
 
-class InvitacionViewSerializer(serializers.ModelSerializer):
-    invitado = InvitadoSerializer(read_only=True)
-    socio = InvitadoSerializer(read_only=True)
-    punto_acceso = InvitadoSerializer(read_only=True)
-    tipo = serializers.ChoiceField(choices=InvitacionTipo.CHOICES)
+class InvitacionFrontendSerializer(serializers.ModelSerializer):
+    """
+    Serializer adaptado exactamente a la interfaz `Invitacion` de Angular (`invitacion-storage.service.ts`).
+    """
+    id = serializers.SerializerMethodField()
+    tipo = serializers.SerializerMethodField()
+    nombreVisitante = serializers.CharField(write_only=True, required=False)
+    dni = serializers.CharField(write_only=True, required=False)
+    porton = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    fechaInicio = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    fechaFin = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    dias = serializers.ListField(child=serializers.CharField(), write_only=True, required=False)
 
     class Meta:
-        model = models.Invitacion
-        fields = ['id', 'invitado', 'socio', 'punto_acceso', 'fecha_creacion', 'fecha_inicio', 'fecha_fin', 'fecha_visita', 'dias_habilitados', 'tipo', 'token_qr']
+        model = Invitacion
+        fields = [
+            'id',
+            'tipo',
+            'nombreVisitante',
+            'dni',
+            'porton',
+            'fechaInicio',
+            'fechaFin',
+            'dias',
+        ]
 
-class InvitacionSerializer(InvitacionViewSerializer):
-    invitado = serializers.PrimaryKeyRelatedField(
-        queryset = models.Invitado.objects.all(),
-        write_only = True
-    )
-    punto_acceso = serializers.PrimaryKeyRelatedField(
-        queryset = models.Invitado.objects.all(),
-        write_only = True
-    )
-    fecha_inicio = serializers.DateTimeField()
-    fecha_fin = serializers.DateTimeField(required=False, allow_null=True)
-    dias_habilitados = serializers.JSONField()
-    tipo = serializers.ChoiceField(choices=InvitacionTipo.CHOICES)
-    token_qr = serializers.UUIDField(read_only=True)
+    def get_id(self, obj):
+        return str(obj.id)
 
-    class Meta:
-        model = models.Invitacion
-        fields = ['invitado', 'socio', 'punto_acceso', 'fecha_inicio', 'fecha_visita', 'dias_habilitados', 'tipo', 'token_qr']
+    def get_tipo(self, obj):
+        # El frontend usa 'concurrente' para las recurrentes
+        return 'concurrente' if obj.tipo == 'recurrente' else 'unica'
 
-    def validate(self, attrs):
-        if attrs.get('tipo') == InvitacionTipo.recurrente:
-            if not attrs.get('fecha_fin') or not attrs.get('dias_habilitados'):
-                raise serializers.ValidationError('Para invitación recurrente se necesitan los dis habilitados y las fechas de inicio y fin')
-        return attrs
+    def to_representation(self, instance):
+        nombre_completo = f"{instance.invitado.nombre} {instance.invitado.apellido}".strip()
+        return {
+            'id': str(instance.id),
+            'tipo': 'concurrente' if instance.tipo == 'recurrente' else 'unica',
+            'nombreVisitante': nombre_completo,
+            'dni': instance.invitado.dni,
+            'porton': instance.punto_acceso.nombre if instance.punto_acceso else 'Portón Principal',
+            'fechaInicio': instance.fecha_inicio.strftime('%Y-%m-%d') if instance.fecha_inicio else None,
+            'fechaFin': instance.fecha_visita.strftime('%Y-%m-%d') if instance.fecha_visita else None,
+            'dias': instance.dias_semana or [],
+            'creadaEn': instance.fecha_creacion.isoformat() if instance.fecha_creacion else timezone.now().isoformat(),
+            'usadaEn': instance.usada_en.isoformat() if instance.usada_en else None,
+        }
 
     def create(self, validated_data):
-        validated_data['token_qr'] = uuid.uuid4()
-        return super().create(validated_data)
+        raw = self.initial_data
+        nombre_visitante = (raw.get('nombreVisitante') or '').strip()
+        partes = nombre_visitante.split(' ', 1)
+        nombre = partes[0] if partes else 'Visitante'
+        apellido = partes[1] if len(partes) > 1 else ''
+        dni = (raw.get('dni') or '').strip()
+        porton_nombre = (raw.get('porton') or 'Portón Principal').strip()
+        tipo_front = raw.get('tipo', 'unica')
+        tipo_db = 'recurrente' if tipo_front in ('concurrente', 'recurrente') else 'unica'
+        dias = raw.get('dias') or []
 
-class InvitacionActivaSerializer(serializers.ModelSerializer):
-    invitado = InvitadoSerializer(read_only=True)
-    punto_acceso = PuntoAccesoSerializer(read_only=True)
+        invitado, _ = Invitado.all_objects.update_or_create(
+            dni=dni,
+            defaults={'nombre': nombre, 'apellido': apellido, 'is_active': True}
+        )
 
-    class Meta:
-        model = models.Invitacion
-        fields = [
-            'id', 'invitado', 'punto_acceso', 'fecha_creacion',
-            'fecha_inicio', 'fecha_fin', 'dias_habilitados', 'tipo', 'token_qr',
-        ]
+        punto_acceso, _ = PuntoAcceso.objects.get_or_create(
+            nombre=porton_nombre,
+            defaults={'tipo': 'mixto', 'estado': 'abierto'}
+        )
 
+        socio = Socio.objects.first()
+        if not socio:
+            lote, _ = Lote.objects.get_or_create(numero=1, defaults={'estado': 'ocupado'})
+            socio = Socio.objects.create(nombre='Tomás', apellido='Residente', dni='30000000', lote=lote)
 
-class InvitacionHistoricoSerializer(serializers.ModelSerializer):
-    invitado = InvitadoSerializer(read_only=True)
-    punto_acceso = PuntoAccesoSerializer(read_only=True)
+        ahora = timezone.now()
+        fecha_inicio = ahora
+        fecha_visita = ahora
 
-    class Meta:
-        model = models.InvitacionHistorico
-        fields = [
-            'id', 'invitado', 'punto_acceso', 'fecha_creacion',
-            'fecha_inicio', 'fecha_visita', 'fecha_fin',
-            'dias_habilitados', 'estado', 'tipo', 'token_qr',
-        ]
+        if raw.get('fechaInicio'):
+            try:
+                dt_ini = datetime.strptime(raw['fechaInicio'], '%Y-%m-%d')
+                fecha_inicio = timezone.make_aware(dt_ini) if timezone.is_naive(dt_ini) else dt_ini
+            except ValueError:
+                pass
 
+        if raw.get('fechaFin'):
+            try:
+                dt_fin = datetime.strptime(raw['fechaFin'], '%Y-%m-%d')
+                fecha_visita = timezone.make_aware(dt_fin) if timezone.is_naive(dt_fin) else dt_fin
+            except ValueError:
+                pass
 
-class InvitacionValidateSerializer(serializers.Serializer):
-    token_qr = serializers.UUIDField()
+        invitacion = Invitacion.objects.create(
+            invitado=invitado,
+            socio=socio,
+            punto_acceso=punto_acceso,
+            fecha_inicio=fecha_inicio,
+            fecha_visita=fecha_visita,
+            dias_habilitados=len(dias) if dias else 1,
+            dias_semana=dias,
+            tipo=tipo_db,
+        )
+        return invitacion

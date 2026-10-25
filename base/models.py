@@ -5,7 +5,7 @@ class ActiveManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(is_active=True)
 
-    
+
 class ActiveStatusModel(models.Model):
     is_active = models.BooleanField(default=True)
 
@@ -15,21 +15,17 @@ class ActiveStatusModel(models.Model):
     class Meta:
         abstract = True
 
+
 class Persona(ActiveStatusModel):
-    nombre = models.CharField(max_length=50)
-    apellido = models.CharField(max_length=50)
-    dni = models.CharField(max_length=10)
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100, blank=True, default='')
+    dni = models.CharField(max_length=20)
 
     def apellido_nombre(self):
-        return f"{self.apellido} {self.nombre}"
+        return f"{self.apellido} {self.nombre}".strip()
 
     def a_nombre(self):
-        return f"{self.apellido[:1]} {self.nombre}"
-
-    def clean(self):
-        super().clean()
-        from .services import validar_dni_unico
-        validar_dni_unico(self.dni, self)
+        return f"{self.apellido[:1]} {self.nombre}".strip()
 
     class Meta:
         abstract = True

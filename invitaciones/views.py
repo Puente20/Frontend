@@ -1,72 +1,69 @@
-from rest_framework import status
-from rest_framework.decorators import action, api_view, permission_classes
+from django.utils import timezone
+from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
 
-from base import permissions
-from . import models, serializers
-from .services import InvitacionService, historial_de
+from .models import Invitacion, InvitacionHistorico, RegistroAcceso
+from .serializers import InvitacionFrontendSerializer
 
 
-class InvitacionViewSet(ModelViewSet):
-    serializer_class = serializers.InvitacionSerializer
-    permission_classes = [permissions.IsSocioRole, permissions.ClavePendiente]
+class InvitacionViewSet(viewsets.ModelViewSet):
+    queryset = Invitacion.objects.select_related('invitado', 'punto_acceso', 'socio').all().order_by('-fecha_creacion')
+    serializer_class = InvitacionFrontendSerializer
 
     def get_queryset(self):
-        return (
-            models.Invitacion.objects
-            .filter(socio=self.request.user.account.socio)
-            .select_related('invitado', 'socio', 'punto_acceso')
+        qs = super().get_queryset()
+        solo_activas = self.request.query_params.get('activas')
+        if solo_activas == 'true':
+            qs = qs.filter(usada_en__isnull=True)
+        return qs
+
+    @action(detail=True, methods=['POST', 'PUT'])
+    def usar(self, request, pk=None):
+        """Marca una invitación como usada (ingreso por QR) y guarda trazabilidad en InvitacionHistorico."""
+        invitacion = self.get_object()
+        ahora = timezone.now()
+        invitacion.usada_en = ahora
+        invitacion.save()
+
+        InvitacionHistorico.objects.create(
+            invitado=invitacion.invitado,
+            socio=invitacion.socio,
+            punto_acceso=invitacion.punto_acceso,
+            fecha_creacion=invitacion.fecha_creacion,
+            fecha_inicio=invitacion.fecha_inicio,
+            fecha_visita=invitacion.fecha_visita,
+            fecha_fin=ahora,
+            dias_habilitados=invitacion.dias_habilitados,
+            estado='recepcionado',
+            tipo=invitacion.tipo,
         )
+        serializer = self.get_serializer(invitacion)
+        return Response(serializer.data)
 
-    def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
-            return serializers.InvitacionViewSerializer
-        return super().get_serializer_class()
+    @action(detail=False, methods=['POST'], url_path='registrar-egreso')
+    def registrar_egreso(self, request):
+        """Registra el egreso de una lista de DNIs desde la pantalla del Guardia."""
+        dnis = request.data.get('dnis', [])
+        if not isinstance(dnis, list) or not dnis:
+            return Response({'detail': 'Debe enviar una lista de DNIs.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    def get_permissions(self):
-        if self.action == 'validate':
-            return [permissions.IsGuardiaRole(), permissions.ClavePendiente()]
-        return super().get_permissions()
+        ahora = timezone.now()
+        registros = []
+        for dni in dnis:
+            dni_str = str(dni).strip()
+            reg = RegistroAcceso.objects.create(
+                dni=dni_str,
+                tipo_movimiento='egreso',
+                hora_desde=ahora.time(),
+                hora_hasta=ahora.time(),
+                valido_desde=ahora,
+                valido_hasta=ahora,
+            )
+            registros.append(reg.id)
 
-    def perform_create(self, serializer):
-        serializer.save(socio=self.request.user.account.socio)
-
-    @action(detail=False, methods=['post'], url_path='validate')
-    def validate(self, request):
-        serializer = serializers.InvitacionValidateSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        historico = InvitacionService.recepcionar(serializer.validated_data['token_qr'])
-        return Response(
-            serializers.InvitacionHistoricoSerializer(historico).data,
-            status=status.HTTP_200_OK,
-        )
-
-    @action(detail=True, methods=['post'], url_path='baja')
-    def baja(self, request, pk=None):
-        historico = InvitacionService.dar_de_baja(self.get_object().pk)
-        return Response(
-            serializers.InvitacionHistoricoSerializer(historico).data,
-            status=status.HTTP_200_OK,
-        )
-
-
-class InvitadoViewSet(ModelViewSet):
-    queryset = models.Invitado.objects.all()
-    serializer_class = serializers.InvitadoSerializer
-    permission_classes = [permissions.IsSocioRole, permissions.ClavePendiente]
-
-
-@api_view(['GET'])
-@permission_classes([permissions.IsSocioRole, permissions.ClavePendiente])
-def historial(request):
-    datos = historial_de(request.user.account.socio)
-    data = {
-        'invitaciones_activas': serializers.InvitacionActivaSerializer(
-            datos['invitaciones_activas'], many=True,
-        ).data,
-        'invitaciones_recepcionadas': serializers.InvitacionHistoricoSerializer(
-            datos['invitaciones_recepcionadas'], many=True,
-        ).data
-    }
-    return Response(data)
+        return Response({
+            'status': 'ok',
+            'cantidad': len(registros),
+            'mensaje': f'Se registraron {len(registros)} egresos correctamente en la base de datos.'
+        }, status=status.HTTP_201_CREATED)
