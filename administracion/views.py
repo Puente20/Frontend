@@ -49,10 +49,21 @@ class SocioViewSet(ActiveViewSet):
 @permission_classes([AllowAny])
 def login_view(request):
     """
-    Autentica un usuario o permite login de desarrollo por rol para conectar con LoginComponent.
+    Autentica cuentas registradas según el rol solicitado.
     """
-    identificador = (request.data.get('identificador') or request.data.get('username') or '').strip()
+    identificador = (
+        request.data.get('identificador')
+        or request.data.get('email')
+        or request.data.get('username')
+        or ''
+    ).strip()
     password = request.data.get('password') or ''
+    if not identificador or not password:
+        return Response(
+            {'detail': 'El correo electrónico y la contraseña son obligatorios.'},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     rol_solicitado = request.data.get('rol', 'administrador')
 
     mapa_roles = {
@@ -62,33 +73,49 @@ def login_view(request):
         'admin': 'admin',
         'socio': 'socio',
     }
-    role_code = mapa_roles.get(rol_solicitado, 'socio')
-
-    user = None
-    if identificador:
-        user_obj = User.objects.filter(username__iexact=identificador).first() or User.objects.filter(email__iexact=identificador).first()
-        if user_obj and password:
-            user = authenticate(username=user_obj.username, password=password)
-
-    # Si no existe en la BD todavia, creamos/recuperamos un usuario demo para ese rol para facilitar las pruebas
-    if not user:
-        default_username = identificador if identificador else f"demo_{role_code}"
-        user, created = User.objects.get_or_create(
-            username=default_username,
-            defaults={
-                'email': identificador if '@' in identificador else f"{default_username}@zentry.com",
-                'first_name': 'Valentina' if role_code == 'admin' else ('Tomás' if role_code == 'socio' else 'Guardia'),
-                'last_name': 'Canepa' if role_code == 'admin' else 'Residente',
-            }
+    role_code = mapa_roles.get(rol_solicitado)
+    if not role_code:
+        return Response(
+            {'detail': 'El rol solicitado no es válido.'},
+            status=status.HTTP_400_BAD_REQUEST,
         )
-        if created and password:
-            user.set_password(password)
-            user.save()
 
-    account, _ = Account.all_objects.get_or_create(user=user, defaults={'role': role_code})
+    user_obj = User.objects.filter(email__iexact=identificador).first()
+    if not user_obj and role_code == 'guardia':
+        user_obj = User.objects.filter(username__iexact=identificador).first()
+    if not user_obj:
+        return Response(
+            {'detail': 'La información de inicio de sesión es incorrecta'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    account = Account.all_objects.filter(user=user_obj, role=role_code).first()
+    if not account:
+        return Response(
+            {'detail': 'La información de inicio de sesión es incorrecta'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+    if not user_obj.is_active or not account.is_active:
+        return Response(
+            {'detail': 'La información de inicio de sesión es incorrecta'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    user = authenticate(username=user_obj.username, password=password)
+    if not user:
+        return Response(
+            {'detail': 'La información de inicio de sesión es incorrecta'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
+    socio = Socio.objects.filter(account=account).first() if role_code == 'socio' else None
+    if role_code == 'socio' and not socio:
+        return Response(
+            {'detail': 'La información de inicio de sesión es incorrecta'},
+            status=status.HTTP_401_UNAUTHORIZED,
+        )
+
     token, _ = Token.objects.get_or_create(user=user)
-
-    socio = Socio.objects.filter(account=account).first() or Socio.objects.first()
 
     return Response({
         'token': token.key,

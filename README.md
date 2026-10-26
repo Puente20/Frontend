@@ -36,13 +36,29 @@ Tambien se encarga de los lotes y los puntos de acceso.
 
 **Modelos:**
 
-- Account (pending)
+- Account
 - Socio <--- Persona
 - Proveedor <-- Persona
 - Guardia <-- Persona
 - Administrador <-- Persona
 - Lote
 - PuntoAcceso
+
+Para habilitar el acceso de un residente, la administración debe crear el usuario
+en Usuarios, asignarle una `Account` con rol `socio` y vincular esa cuenta al
+registro del residente. El ingreso de residentes requiere el email y la contraseña
+de ese usuario; no se crean cuentas de prueba durante el inicio de sesión.
+
+Para configurar la cuenta administradora, definí `ZENTRY_ADMIN_EMAIL` y
+`ZENTRY_ADMIN_PASSWORD` en el archivo `.env` local (no subas ese archivo al
+repositorio) y ejecutá `python manage.py configurar_administrador`. El login de
+administrador valida esas credenciales contra la cuenta real; no hay contraseñas
+maestras guardadas en el código.
+
+Si un residente fue creado antes de habilitar la creación automática de cuentas,
+definí `ZENTRY_RESIDENT_EMAIL` y `ZENTRY_RESIDENT_PASSWORD` en el `.env` local y
+ejecutá `python manage.py configurar_acceso_residente`. El comando vincula el
+residente existente sin duplicar su perfil.
 
 ### Invitaciones
 
