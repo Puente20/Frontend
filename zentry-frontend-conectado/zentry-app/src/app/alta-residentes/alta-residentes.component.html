@@ -95,18 +95,57 @@
         required />
     </div>
 
+    <div class="form-group">
+      <label for="password" class="input-label">Contraseña inicial</label>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        class="pill-input"
+        [(ngModel)]="residente.password"
+        autocomplete="new-password"
+        minlength="8"
+        required />
+    </div>
+
     <!-- Teléfono celular -->
     <div class="form-group">
-      <label for="telefono" class="input-label">Teléfono celular</label>
-      <input
-        id="telefono"
-        name="telefono"
-        type="tel"
-        inputmode="tel"
-        class="pill-input"
-        [(ngModel)]="residente.telefono"
-        autocomplete="tel"
-        required />
+      <span class="input-label">Teléfono celular</span>
+      <div class="phone-fields">
+        <input
+          id="codigo-pais"
+          name="codigoPais"
+          type="tel"
+          class="pill-input phone-country-code"
+          [(ngModel)]="residente.codigoPais"
+          inputmode="numeric"
+          maxlength="4"
+          aria-label="Código de país"
+          placeholder="+54"
+          required />
+        <input
+          id="codigo-area"
+          name="codigoArea"
+          type="tel"
+          class="pill-input"
+          [(ngModel)]="residente.codigoArea"
+          inputmode="numeric"
+          maxlength="4"
+          aria-label="Código de área"
+          placeholder="3489"
+          required />
+        <input
+          id="numero-local"
+          name="numeroLocal"
+          type="tel"
+          class="pill-input"
+          [(ngModel)]="residente.numeroLocal"
+          inputmode="numeric"
+          maxlength="10"
+          aria-label="Número de teléfono"
+          placeholder="433123"
+          required />
+      </div>
     </div>
 
     <!-- Asignación de lote (1 al 100 con búsqueda que posiciona el número arriba de todo) -->

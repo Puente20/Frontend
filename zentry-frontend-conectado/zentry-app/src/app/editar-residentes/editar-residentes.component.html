@@ -47,6 +47,10 @@
       <p class="empty-state-text">Cargando residentes...</p>
     </div>
 
+    <div class="empty-state-card" *ngIf="!cargando && errorCarga">
+      <p class="empty-state-text">{{ errorCarga }}</p>
+    </div>
+
     <div class="residents-list" *ngIf="!cargando && residentesFiltrados.length > 0">
       <article
         class="resident-card"
@@ -83,8 +87,10 @@
       </article>
     </div>
 
-    <div class="empty-state-card" *ngIf="!cargando && residentesFiltrados.length === 0">
-      <p class="empty-state-text">No se encontraron residentes para "{{ terminoBusqueda }}".</p>
+    <div class="empty-state-card" *ngIf="!cargando && !errorCarga && residentesFiltrados.length === 0">
+      <p class="empty-state-text">
+        {{ residentes.length ? 'No se encontraron residentes para "' + terminoBusqueda + '".' : 'Todavía no hay residentes dados de alta.' }}
+      </p>
     </div>
   </main>
 
@@ -228,6 +234,24 @@
           [(ngModel)]="formularioEdicion.email"
           autocomplete="email"
           required />
+      </div>
+
+      <div class="form-group">
+        <label for="edit-password" class="input-label">
+          {{ residenteEditando?.tiene_acceso ? 'Cambiar contraseña (opcional)' : 'Contraseña inicial para acceso' }}
+        </label>
+        <input
+          id="edit-password"
+          name="password"
+          type="password"
+          class="pill-input"
+          [(ngModel)]="formularioEdicion.password"
+          autocomplete="new-password"
+          minlength="8"
+          [required]="!residenteEditando?.tiene_acceso" />
+        <small *ngIf="residenteEditando?.tiene_acceso" class="input-help">
+          Dejala vacía para conservar la contraseña actual.
+        </small>
       </div>
 
       <div class="form-group">

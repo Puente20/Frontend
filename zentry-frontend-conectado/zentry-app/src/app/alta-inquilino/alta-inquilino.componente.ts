@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResidentesService } from '../services/residentes.service';
+import { componerTelefono } from '../utils/residente-form.utils';
 
 export interface NuevoInquilino {
   nombre: string;
@@ -10,6 +11,7 @@ export interface NuevoInquilino {
   dni: string;
   email: string;
   telefono: string;
+  password: string;
   lote: number;
   fechaInicioContrato: string;
   fechaFinContrato: string;
@@ -38,7 +40,10 @@ export class AltaInquilinoComponent {
     apellido: '',
     dni: '',
     email: '',
-    telefono: '',
+    codigoPais: '+54',
+    codigoArea: '',
+    numeroLocal: '',
+    password: '',
     lote: '',
     fechaInicioContrato: '',
     fechaFinContrato: ''
@@ -356,15 +361,31 @@ export class AltaInquilinoComponent {
     const apellido = this.inquilino.apellido.trim();
     const dni = this.inquilino.dni.trim();
     const email = this.inquilino.email.trim();
-    const telefono = this.inquilino.telefono.trim();
+    const codigoPais = this.inquilino.codigoPais.replace(/\D/g, '');
+    const codigoArea = this.inquilino.codigoArea.replace(/\D/g, '');
+    const numeroLocal = this.inquilino.numeroLocal.replace(/\D/g, '');
+    const password = this.inquilino.password.trim();
+    const telefono = componerTelefono(codigoPais, codigoArea, numeroLocal);
     const numeroLote = Number(this.inquilino.lote);
     const { fechaInicioContrato, fechaFinContrato } = this.inquilino;
 
     if (
-      !nombre || !apellido || !dni || !email || !telefono ||
+      !nombre || !apellido || !dni || !email || !codigoPais || !codigoArea || !numeroLocal ||
+      !password ||
       !this.inquilino.lote || !fechaInicioContrato || !fechaFinContrato
     ) {
-      alert('Por favor, completá todos los datos y las fechas del contrato.');
+      alert('Por favor, completá todos los datos, la contraseña y las fechas del contrato.');
+      return;
+    }
+
+    if (password.length < 8) {
+      alert('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+
+    if (codigoPais.length > 3 || codigoArea.length < 2 || codigoArea.length > 4 ||
+        numeroLocal.length < 6 || numeroLocal.length > 10) {
+      alert('Revisá el código de país, el código de área y el número de teléfono.');
       return;
     }
 
@@ -384,6 +405,7 @@ export class AltaInquilinoComponent {
       dni,
       email,
       telefono,
+      password,
       lote: numeroLote,
       fechaInicioContrato,
       fechaFinContrato,
@@ -399,6 +421,7 @@ export class AltaInquilinoComponent {
       dni,
       email,
       telefono,
+      password,
       lote_numero: numeroLote,
       fechaInicioContrato,
       fechaFinContrato,
@@ -406,26 +429,12 @@ export class AltaInquilinoComponent {
     }).subscribe({
       next: (creado) => {
         console.log('Alta de inquilino guardada en BD:', creado);
-        void this.router.navigate(['/admin-home']);
+        void this.router.navigate(['/editar-residentes']);
       },
       error: (err) => {
-        console.warn('No se pudo conectar al backend, guardando en localStorage de respaldo:', err);
-        if (typeof window !== 'undefined') {
-          const prev = JSON.parse(window.localStorage.getItem('zentry_inquilinos_extra') || '[]');
-          prev.push({
-            id: Date.now(),
-            nombre: `${nombre} ${apellido}`,
-            lote: numeroLote,
-            telefono,
-            email,
-            dni,
-            fechaInicioContrato,
-            fechaFinContrato,
-            tipo: 'inquilino'
-          });
-          window.localStorage.setItem('zentry_inquilinos_extra', JSON.stringify(prev));
-        }
-        void this.router.navigate(['/admin-home']);
+        console.warn('No se pudo guardar el alta del inquilino:', err);
+        alert(err.error?.email?.[0] || err.error?.password?.[0] ||
+          'No se pudo crear el inquilino. Revisá que el email no esté registrado e intentá nuevamente.');
       }
     });
   }

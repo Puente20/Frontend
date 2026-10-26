@@ -81,6 +81,35 @@ app-root::-webkit-scrollbar {
   padding-top: 32px;
 }
 
+.phone-fields {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 0.9fr) minmax(0, 1.3fr);
+  gap: 8px;
+}
+
+.phone-fields .pill-input {
+  min-width: 0;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.password-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.password-action {
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: #2C2C2C;
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .edit-modal .edit-dropdown-container {
   position: relative;
 }

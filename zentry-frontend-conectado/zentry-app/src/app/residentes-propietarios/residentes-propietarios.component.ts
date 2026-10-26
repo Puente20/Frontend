@@ -116,6 +116,10 @@ export class ResidentesPropietariosComponent implements OnInit {
       void this.router.navigate(['/admin-home']);
       return;
     }
+    if (tab === 'residentes') {
+      void this.router.navigate(['/editar-residentes']);
+      return;
+    }
     if (tab === 'ajustes') {
       void this.router.navigate(['/admin-home'], { queryParams: { tab: 'ajustes' } });
     }

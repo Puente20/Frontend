@@ -35,7 +35,7 @@ export class AdminHomeComponent implements OnInit {
 
   cambiarTab(tab: 'inicio' | 'perfil' | 'ajustes'): void {
     if (tab === 'perfil') {
-      void this.router.navigate(['/residentes-propietarios']);
+      void this.router.navigate(['/editar-residentes']);
       return;
     }
 

@@ -10,6 +10,7 @@ export interface ResidenteDTO {
   nombre_completo?: string;
   dni?: string;
   email?: string;
+  tiene_acceso?: boolean;
   telefono: string;
   tipo: 'propietario' | 'inquilino';
   lote: number;
@@ -26,6 +27,7 @@ export interface CrearResidentePayload {
   dni: string;
   email: string;
   telefono: string;
+  password: string;
   tipo: 'propietario' | 'inquilino';
   lote_numero: number;
   patentes: string[];

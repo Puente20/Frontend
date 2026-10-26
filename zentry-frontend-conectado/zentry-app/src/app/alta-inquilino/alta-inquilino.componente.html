@@ -49,9 +49,25 @@
     </div>
 
     <div class="form-group">
-      <label for="inquilino-telefono" class="input-label">Teléfono celular</label>
-      <input id="inquilino-telefono" name="telefono" type="tel" inputmode="tel" class="pill-input"
-        [(ngModel)]="inquilino.telefono" autocomplete="tel" required />
+      <label for="inquilino-password" class="input-label">Contraseña inicial</label>
+      <input id="inquilino-password" name="password"
+        type="password" class="pill-input"
+        [(ngModel)]="inquilino.password" autocomplete="new-password" minlength="8" required />
+    </div>
+
+    <div class="form-group">
+      <span class="input-label">Teléfono celular</span>
+      <div class="phone-fields">
+        <input id="inquilino-codigo-pais" name="codigoPais" type="tel"
+          class="pill-input phone-country-code" [(ngModel)]="inquilino.codigoPais"
+          inputmode="numeric" maxlength="4" aria-label="Código de país" placeholder="+54" required />
+        <input id="inquilino-codigo-area" name="codigoArea" type="tel" class="pill-input"
+          [(ngModel)]="inquilino.codigoArea" inputmode="numeric" maxlength="4"
+          aria-label="Código de área" placeholder="3489" required />
+        <input id="inquilino-numero-local" name="numeroLocal" type="tel" class="pill-input"
+          [(ngModel)]="inquilino.numeroLocal" inputmode="numeric" maxlength="10"
+          aria-label="Número de teléfono" placeholder="433123" required />
+      </div>
     </div>
 
     <div class="form-group lote-select-container">

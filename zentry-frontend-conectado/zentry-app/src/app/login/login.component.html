@@ -41,7 +41,7 @@
     <!-- Campo Usuario / Email -->
     <div class="form-group">
       <label for="identificador">
-        {{ rolSeleccionado === 'residente' ? 'ID de residente o email' : rolSeleccionado === 'administrador' ? 'ID de administrador o email' : 'ID de guardia o email' }}
+        {{ rolSeleccionado === 'residente' ? 'Email de residente' : rolSeleccionado === 'administrador' ? 'Email de administrador' : 'ID de guardia o email' }}
       </label>
       <div class="input-row">
         <div class="input-box">
@@ -55,7 +55,9 @@
             id="identificador"
             name="identificador"
             [(ngModel)]="identificador"
+            (ngModelChange)="limpiarError()"
             placeholder="ejemplo@gmail.com" 
+            required
           />
         </div>
       </div>
@@ -75,7 +77,9 @@
             id="password"
             name="password"
             [(ngModel)]="password"
+            (ngModelChange)="limpiarError()"
             placeholder="***********" 
+            required
           />
         </div>
 
@@ -94,7 +98,10 @@
 
     <!-- 4. Botón Iniciar Sesión y enlace de contraseña -->
     <div class="actions-group">
-      <button type="submit" class="btn-submit">Iniciar sesión</button>
+      <p *ngIf="errorMensaje" class="login-error" role="alert" aria-live="polite">{{ errorMensaje }}</p>
+      <button type="submit" class="btn-submit" [disabled]="enviando">
+        {{ enviando ? 'Ingresando...' : 'Iniciar sesión' }}
+      </button>
       <a routerLink="/recu-contrasena" class="forgot-link">¿Olvidaste tu contraseña?</a>
     </div>
 

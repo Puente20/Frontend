@@ -3,17 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResidentesService } from '../services/residentes.service';
-
-export interface NuevoResidente {
-  tipo: 'propietario' | 'inquilino';
-  nombre: string;
-  apellido: string;
-  dni: string;
-  email: string;
-  telefono: string;
-  lote: string;
-  patentes: string[];
-}
+import { componerTelefono } from '../utils/residente-form.utils';
 
 @Component({
   selector: 'app-alta-residentes',
@@ -37,7 +27,10 @@ export class AltaResidentesComponent {
     apellido: '',
     dni: '',
     email: '',
-    telefono: '',
+    codigoPais: '+54',
+    codigoArea: '',
+    numeroLocal: '',
+    password: '',
     lote: ''
   };
 
@@ -188,11 +181,27 @@ export class AltaResidentesComponent {
     const apellido = this.residente.apellido.trim();
     const dni = this.residente.dni.trim();
     const email = this.residente.email.trim();
-    const telefono = this.residente.telefono.trim();
+    const codigoPais = this.residente.codigoPais.replace(/\D/g, '');
+    const codigoArea = this.residente.codigoArea.replace(/\D/g, '');
+    const numeroLocal = this.residente.numeroLocal.replace(/\D/g, '');
+    const password = this.residente.password.trim();
+    const telefono = componerTelefono(codigoPais, codigoArea, numeroLocal);
     const loteDigitos = (this.residente.lote || this.loteFiltro).replace(/\D/g, '').trim();
 
-    if (!nombre || !apellido || !dni || !email || !telefono || !loteDigitos) {
-      alert('Por favor, completá todos los datos personales y la asignación de lote.');
+    if (!nombre || !apellido || !dni || !email || !codigoPais || !codigoArea || !numeroLocal ||
+        !password || !loteDigitos) {
+      alert('Por favor, completá todos los datos personales, la contraseña y la asignación de lote.');
+      return;
+    }
+
+    if (password.length < 8) {
+      alert('La contraseña debe tener al menos 8 caracteres.');
+      return;
+    }
+
+    if (codigoPais.length > 3 || codigoArea.length < 2 || codigoArea.length > 4 ||
+        numeroLocal.length < 6 || numeroLocal.length > 10) {
+      alert('Revisá el código de país, el código de área y el número de teléfono.');
       return;
     }
 
@@ -206,17 +215,6 @@ export class AltaResidentesComponent {
       .map((patente) => patente.trim().toUpperCase())
       .filter((patente) => patente.length > 0);
 
-    const payload: NuevoResidente = {
-      tipo: this.tipoResidente,
-      nombre,
-      apellido,
-      dni,
-      email,
-      telefono,
-      lote: `Lote ${numeroLote}`,
-      patentes: patentesCargadas
-    };
-
     this.residentesService.crearResidente({
       tipo: 'propietario',
       nombre,
@@ -224,16 +222,18 @@ export class AltaResidentesComponent {
       dni,
       email,
       telefono,
+      password,
       lote_numero: numeroLote,
       patentes: patentesCargadas
     }).subscribe({
       next: (creado) => {
         console.log('Alta de propietario guardada en BD:', creado);
-        void this.router.navigate(['/admin-home']);
+        void this.router.navigate(['/editar-residentes']);
       },
       error: (err) => {
-        console.warn('Error al conectar con el backend, redirigiendo localmente:', err, payload);
-        void this.router.navigate(['/admin-home']);
+        console.warn('No se pudo guardar el alta del propietario:', err);
+        alert(err.error?.email?.[0] || err.error?.password?.[0] ||
+          'No se pudo crear el residente. Revisá que el email no esté registrado e intentá nuevamente.');
       }
     });
   }
