@@ -63,7 +63,32 @@
         <p class="card-description">Descargar histórico de ingresos<br>y egresos.</p>
       </div>
     </button>
+    <!-- 4 Opcion Creación de guardia-->
+  <button type="button" class="management-card" (click)="seleccionarAccion('guardia')">
+    <div class="card-icon-box">
+      <svg width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M19 60.1667V63.3333C19 64.2306 18.6965 64.9826 18.0896 65.5896C17.4826 66.1965 16.7306 66.5 15.8333 66.5H12.6667C11.7694 66.5 11.0174 66.1965 10.4104 65.5896C9.80347 64.9826 9.5 64.2306 9.5 63.3333V38L16.15 19C16.4667 18.05 17.034 17.2847 17.8521 16.7042C18.6701 16.1236 19.5806 15.8333 20.5833 15.8333H28.5V9.5H47.5V15.8333H55.4167C56.4194 15.8333 57.3299 16.1236 58.1479 16.7042C58.966 17.2847 59.5333 18.05 59.85 19L66.5 38V63.3333C66.5 64.2306 66.1965 64.9826 65.5896 65.5896C64.9826 66.1965 64.2306 66.5 63.3333 66.5H60.1667C59.2694 66.5 58.5174 66.1965 57.9104 65.5896C57.3035 64.9826 57 64.2306 57 63.3333V60.1667H19ZM18.3667 31.6667H57.6333L54.3083 22.1667H21.6917L18.3667 31.6667ZM23.75 50.6667C25.0694 50.6667 26.191 50.2049 27.1146 49.2812C28.0382 48.3576 28.5 47.2361 28.5 45.9167C28.5 44.5972 28.0382 43.4757 27.1146 42.5521C26.191 41.6285 25.0694 41.1667 23.75 41.1667C22.4306 41.1667 21.309 41.6285 20.3854 42.5521C19.4618 43.4757 19 44.5972 19 45.9167C19 47.2361 19.4618 48.3576 20.3854 49.2812C21.309 50.2049 22.4306 50.6667 23.75 50.6667ZM52.25 50.6667C53.5694 50.6667 54.691 50.2049 55.6146 49.2812C56.5382 48.3576 57 47.2361 57 45.9167C57 44.5972 56.5382 43.4757 55.6146 42.5521C54.691 41.6285 53.5694 41.1667 52.25 41.1667C50.9306 41.1667 49.809 41.6285 48.8854 42.5521C47.9618 43.4757 47.5 44.5972 47.5 45.9167C47.5 47.2361 47.9618 48.3576 48.8854 49.2812C49.809 50.2049 50.9306 50.6667 52.25 50.6667ZM15.8333 53.8333H60.1667V38H15.8333V53.8333Z" fill="#1D1B20"/>
+</svg>
+    </div>
+    <div class="card-content">
+      <h3 class="card-title">Dar de alta a guardia</h3>
+      <p class="card-description">Registrar nuevo guardia para el barrio</p>
+    </div>
+  </button>
 
+  <button type="button" class="management-card" (click)="seleccionarAccion('administrador')">
+    <div class="card-icon-box">
+      <svg class="card-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M2.5 20v-1.5A5.5 5.5 0 0 1 8 13h2a5.5 5.5 0 0 1 5.5 5.5V20H2.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M19 7v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="card-content">
+      <h3 class="card-title">Dar de alta administrador</h3>
+      <p class="card-description">Registrar un nuevo administrador del barrio.</p>
+    </div>
+  </button>
   </main>
 
   <!-- Vista secundaria opcional para Perfil / Ajustes -->

@@ -1,0 +1,72 @@
+<main class="alta-administrador-container">
+  <header class="profile-header">
+    <div class="avatar-circle">
+      <img src="/minilogo-sfondo.png" alt="Logo Zentry" class="avatar-img" />
+    </div>
+    <div class="profile-info">
+      <h2 class="admin-name">{{ adminNombre }}</h2>
+      <p class="admin-role">{{ adminRol }}</p>
+    </div>
+  </header>
+
+  <section class="panel-heading">
+    <h1 class="panel-title">Registrar administrador</h1>
+    <p class="panel-subtitle">Completá los datos para dar de alta un administrador.</p>
+  </section>
+
+  <form class="form-card" (ngSubmit)="darAlta()" novalidate>
+    <h2 class="card-section-title">Datos personales</h2>
+
+    <div class="form-group">
+      <label for="nombre" class="input-label">Nombre</label>
+      <input
+        id="nombre"
+        name="nombre"
+        type="text"
+        class="pill-input"
+        [(ngModel)]="administrador.nombre"
+        autocomplete="name"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="email" class="input-label">Correo electrónico</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        class="pill-input"
+        [(ngModel)]="administrador.mail"
+        autocomplete="email"
+        required>
+    </div>
+
+    <div class="form-group">
+      <label for="contrasena" class="input-label">Contraseña</label>
+      <input
+        id="contrasena"
+        name="contrasena"
+        type="password"
+        class="pill-input"
+        [(ngModel)]="administrador.contra"
+        autocomplete="new-password"
+        minlength="8"
+        required>
+    </div>
+
+    <p
+      *ngIf="mensajeFormulario"
+      class="form-message"
+      [class.form-message-error]="tipoMensaje === 'error'"
+      [class.form-message-info]="tipoMensaje === 'info'"
+      role="status"
+      aria-live="polite">
+      {{ mensajeFormulario }}
+    </p>
+
+    <div class="form-actions">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" class="btn-dar-alta">Dar alta</button>
+    </div>
+  </form>
+</main>

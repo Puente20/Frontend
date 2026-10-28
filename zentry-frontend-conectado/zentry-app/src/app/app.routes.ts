@@ -18,6 +18,8 @@ import { RecuContrasenaComponent } from './recu-contrasena/recu-contrasena.compo
 import { ConfRecuComponent } from './confirmarRecu/confirmarRecu.component';
 import { InvitacionesActivasComponent } from './invitaciones-activas/invitaciones-activas.component';
 import { PestanaEgresosComponent } from './pestana-egresos/pestana-egresos.component';
+import { RegistrarGuardiaComponent } from './registrar-guardia/registrar-guardia.component';
+import { AltaAdministradorComponent } from './alta-administrador/alta-administrador.component';
 
 export const routes: Routes = [
   { path: 'pestana-egresos', component: PestanaEgresosComponent },
@@ -26,6 +28,8 @@ export const routes: Routes = [
   { path: 'recu-contrasena', component: RecuContrasenaComponent },
   { path: 'confirmarRecu', component: ConfRecuComponent },
   { path: 'admin-home', component: AdminHomeComponent },
+  { path: 'registrar-guardia', component: RegistrarGuardiaComponent },
+  { path: 'alta-administrador', component: AltaAdministradorComponent },
   { path: 'alta-residentes', component: AltaResidentesComponent },
   { path: 'alta-inquilino', component: AltaInquilinoComponent },
   { path: 'residentes-propietarios', component: ResidentesPropietariosComponent },

@@ -1,0 +1,62 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-alta-administrador',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './alta-administrador.component.html',
+  styleUrl: './alta-administrador.component.css'
+})
+export class AltaAdministradorComponent {
+  adminNombre = 'Valentina Canepa';
+  adminRol = 'Administradora';
+
+  administrador = {
+    nombre: '',
+    mail: '',
+    contra: ''
+  };
+
+  mensajeFormulario = '';
+  tipoMensaje: 'error' | 'info' | '' = '';
+
+  constructor(private router: Router) {}
+
+  cancelar(): void {
+    void this.router.navigate(['/admin-home']);
+  }
+
+  darAlta(): void {
+    const nombre = this.administrador.nombre.trim();
+    const mail = this.administrador.mail.trim();
+    const contra = this.administrador.contra;
+
+    if (!nombre || !mail || !contra.trim()) {
+      this.mostrarMensaje('Completá todos los campos para continuar.', 'error');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+      this.mostrarMensaje('Ingresá una dirección de correo válida.', 'error');
+      return;
+    }
+
+    if (contra.length < 8) {
+      this.mostrarMensaje('La contraseña debe tener al menos 8 caracteres.', 'error');
+      return;
+    }
+
+    this.mostrarMensaje(
+      'Los datos son válidos, pero el administrador todavía no se guarda: falta conectar el endpoint.',
+      'info'
+    );
+  }
+
+  private mostrarMensaje(mensaje: string, tipo: 'error' | 'info'): void {
+    this.mensajeFormulario = mensaje;
+    this.tipoMensaje = tipo;
+  }
+}

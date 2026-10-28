@@ -42,7 +42,7 @@ export class AdminHomeComponent implements OnInit {
     this.tabActiva = tab;
   }
 
-  seleccionarAccion(accion: 'alta' | 'editar' | 'historial'): void {
+  seleccionarAccion(accion: 'alta' | 'editar' | 'historial' | 'guardia' | 'administrador'): void {
     if (accion === 'alta') {
       void this.router.navigate(['/alta-residentes']);
       return;
@@ -54,8 +54,17 @@ export class AdminHomeComponent implements OnInit {
     }
     if (accion === 'historial') {
       void this.router.navigate(['/pestana-egresos']);
+      return;
     }
-    console.log('Acción seleccionada:', accion);
+
+    if (accion === 'guardia') {
+      void this.router.navigate(['/registrar-guardia']);
+      return;
+    }
+
+    if (accion === 'administrador') {
+      void this.router.navigate(['/alta-administrador']);
+    }
   }
 
   cerrarSesion(): void {
