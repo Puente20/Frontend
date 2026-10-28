@@ -32,7 +32,7 @@ export class EditarResidentesComponent implements OnInit {
   fechaActual: string = '13 de Agosto de 2026';
   nombreBarrio: string = 'La Reserva Cardales';
 
-  tabActiva: 'inicio' | 'residentes' | 'ajustes' = 'inicio';
+  tabActiva: 'inicio' | 'residentes' | 'ajustes' = 'residentes';
   terminoBusqueda: string = '';
   cargando: boolean = false;
   errorCarga: string = '';

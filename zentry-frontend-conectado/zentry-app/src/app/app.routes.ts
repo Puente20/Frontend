@@ -17,8 +17,10 @@ import { RegistrarEgresoComponent } from './registrar-egreso/registrar-egreso.co
 import { RecuContrasenaComponent } from './recu-contrasena/recu-contrasena.component';
 import { ConfRecuComponent } from './confirmarRecu/confirmarRecu.component';
 import { InvitacionesActivasComponent } from './invitaciones-activas/invitaciones-activas.component';
+import { PestanaEgresosComponent } from './pestana-egresos/pestana-egresos.component';
 
 export const routes: Routes = [
+  { path: 'pestana-egresos', component: PestanaEgresosComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'recu-contrasena', component: RecuContrasenaComponent },

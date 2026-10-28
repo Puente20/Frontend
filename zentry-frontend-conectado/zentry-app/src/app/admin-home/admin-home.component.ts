@@ -52,7 +52,9 @@ export class AdminHomeComponent implements OnInit {
       void this.router.navigate(['/editar-residentes']);
       return;
     }
-
+    if (accion === 'historial') {
+      void this.router.navigate(['/pestana-egresos']);
+    }
     console.log('Acción seleccionada:', accion);
   }
 
