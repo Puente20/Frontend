@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResidentesService } from '../services/residentes.service';
 import { componerTelefono } from '../utils/residente-form.utils';
+import { RouterLink } from '@angular/router';
 
 export interface NuevoInquilino {
   nombre: string;
@@ -21,7 +22,7 @@ export interface NuevoInquilino {
 @Component({
   selector: 'app-alta-inquilino',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './alta-inquilino.componente.html',
   styleUrl: './alta-inquilino.componente.css'
 })

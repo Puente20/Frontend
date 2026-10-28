@@ -5,14 +5,14 @@
     </div>
   </header>
 
-  <section class="welcome" aria-labelledby="welcome-title">
+  <section class="welcome" aria-labelledby="welcome-title" *ngIf="tabActiva === 'inicio'">
     <h1 id="welcome-title">
       Buenas tardes, <span id="resident-name">{{ request.user.first_name }}</span>
     </h1>
     <p>Fecha, 13 de agosto de 2026</p>
   </section>
 
-  <section class="invitation-section" aria-labelledby="invitation-title">
+  <section class="invitation-section" aria-labelledby="invitation-title" *ngIf="tabActiva === 'inicio'">
     <h2 id="invitation-title">Invitaciones</h2>
     <div class="invitation-cards">
       <div class="invitation-card">
@@ -35,7 +35,7 @@
     </div>
   </section>
 
-  <section class="quick-actions" aria-label="Accesos rápidos">
+  <section class="quick-actions" aria-label="Accesos rápidos" *ngIf="tabActiva === 'inicio'">
     <div class="reservation-section">
       <h2>Reservas</h2>
       <div class="reservation-card">
@@ -67,7 +67,7 @@
     </div>
   </section>
 
-  <section class="activity-section" aria-labelledby="activity-title">
+  <section class="activity-section" aria-labelledby="activity-title" *ngIf="tabActiva === 'inicio'">
     <h2 id="activity-title">Últimos movimientos</h2>
     <ul class="activity-list" aria-label="Historial de movimientos">
       <li class="activity-item" *ngFor="let movimiento of ultimosMovimientos; trackBy: trackByMovimientoId">
@@ -95,4 +95,91 @@
     (cerrar)="cerrarModalPanico()"
     (confirmar)="confirmarEmergencia()">
   </panic-button>
+
+  <!-- VISTA DEL USUARIO -->
+<section
+  class="socio-perfil"
+  *ngIf="tabActiva === 'usuario'">
+
+  <h2>Mi usuario</h2>
+
+  <div class="socio-perfil-card">
+
+    <div class="socio-avatar">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="7.5" r="4.2"/>
+        <path d="M4.5 20.2C4.5 16.2 7.8 13.5 12 13.5C16.2 13.5 19.5 16.2 19.5 20.2H4.5Z"/>
+      </svg>
+    </div>
+
+    <h3>{{ request.user.first_name }}</h3>
+    <p>Socio / Residente</p>
+
+    <button
+      type="button"
+      class="socio-cerrar-sesion"
+      (click)="cerrarSesion()">
+      Cerrar sesión
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- BARRA INFERIOR -->
+<nav
+  class="bottom-nav-container"
+  aria-label="Navegación del socio">
+
+  <div class="bottom-nav">
+
+    <!-- INICIO -->
+    <button
+      type="button"
+      class="nav-item"
+      [class.active]="tabActiva === 'inicio'"
+      (click)="cambiarTab('inicio')"
+      aria-label="Inicio">
+
+      <span
+        class="nav-notch"
+        *ngIf="tabActiva === 'inicio'">
+      </span>
+
+      <span class="nav-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 3.2L3 10.8V20.2C3 20.64 3.36 21 3.8 21H9.5V14.5H14.5V21H20.2C20.64 21 21 20.64 21 20.2V10.8L12 3.2Z"/>
+        </svg>
+      </span>
+
+    </button>
+
+
+    <!-- USUARIO -->
+    <button
+      type="button"
+      class="nav-item"
+      [class.active]="tabActiva === 'usuario'"
+      (click)="cambiarTab('usuario')"
+      aria-label="Usuario">
+
+      <span
+        class="nav-notch"
+        *ngIf="tabActiva === 'usuario'">
+      </span>
+
+      <span class="nav-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="12" cy="7.5" r="4.2"/>
+          <path d="M4.5 20.2C4.5 16.2 7.8 13.5 12 13.5C16.2 13.5 19.5 16.2 19.5 20.2H4.5Z"/>
+        </svg>
+      </span>
+
+    </button>
+
+  </div>
+
+</nav>
+
 </main>

@@ -27,6 +27,8 @@ export class ResidentHomeComponent implements OnInit {
 
   mostrarModalPanico: boolean = false;
 
+  tabActiva: 'inicio' | 'usuario' = 'inicio';
+
   /** Lista reactiva que se muestra en la sección "Últimos movimientos" */
   ultimosMovimientos: MovimientoResidente[] = [];
 
@@ -77,4 +79,14 @@ export class ResidentHomeComponent implements OnInit {
   IrANuevaReserva(): void {
     void this.router.navigate(['/nueva-reserva']);
   }
+
+  cambiarTab(tab: 'inicio' | 'usuario'): void {
+  this.tabActiva = tab;
+}
+
+cerrarSesion(): void {
+  this.authService.logout();
+  void this.router.navigate(['/login']);
+}
+
 }

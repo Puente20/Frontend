@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResidentesService } from '../services/residentes.service';
 import { componerTelefono } from '../utils/residente-form.utils';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-alta-residentes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './alta-residentes.component.html',
   styleUrl: './alta-residentes.component.css'
 })

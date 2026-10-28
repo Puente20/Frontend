@@ -228,3 +228,29 @@ app-root::-webkit-scrollbar {
   justify-self: center;
   transform: translateX(-4px);
 }
+
+.z-volver-admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 18px 0;
+  padding: 10px 16px;
+  background: #2c2c2c;
+  color: white;
+  border-radius: 22px;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.z-volver-admin:hover {
+  background: #444;
+}
+
+.z-volver-admin:focus-visible {
+  outline: 3px solid #31c770;
+  outline-offset: 3px;
+}

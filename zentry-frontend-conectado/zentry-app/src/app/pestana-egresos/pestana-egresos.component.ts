@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 type TipoEntrada = 'ingreso' | 'egreso';
 
@@ -14,7 +15,7 @@ interface Movimiento {
 @Component({
   selector: 'app-pestana-egresos',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './pestana-egresos.component.html',
   styleUrl: './pestana-egresos.component.css'
 })

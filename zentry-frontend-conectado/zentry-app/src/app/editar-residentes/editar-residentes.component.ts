@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResidentesService } from '../services/residentes.service';
+import { RouterLink } from '@angular/router';
 
 interface Residente {
   id: number;
@@ -22,7 +23,7 @@ interface Residente {
 @Component({
   selector: 'app-editar-residentes',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports:  [CommonModule, FormsModule, RouterLink],
   templateUrl: './editar-residentes.component.html',
   styleUrl: './editar-residentes.component.css'
 })

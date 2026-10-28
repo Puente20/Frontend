@@ -1,13 +1,14 @@
 .resident-home {
   position: relative;
   display: flex;
-  height: 100%;
+  height: auto;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   min-height: 100vh;
   padding: 28px 14px 24px;
   color: #171717;
   background-color: #f7f4ef;
+  box-sizing: border-box;
   font-family: 'Inter', sans-serif;
 }
 
@@ -267,4 +268,170 @@
     padding: 10px;
     font-size: 13px;
   }
+}
+
+/* BARRA INFERIOR - MISMO DISEÑO QUE ADMIN */
+
+.bottom-nav-container {
+  margin-top: auto;
+  padding-top: 45px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bottom-nav {
+  width: 100%;
+  max-width: 312px;
+  height: 52px;
+  background-color: #2C2C2C;
+  border-radius: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  position: relative;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.nav-item {
+  position: relative;
+  width: 56px;
+  height: 52px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #FFFFFF;
+  padding: 0;
+}
+
+.nav-icon-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.5s ease, color 0.5s ease;
+}
+
+.nav-icon-wrapper svg {
+  width: 28px;
+  height: 28px;
+}
+
+.nav-item.active .nav-icon-wrapper {
+  width: 46px;
+  height: 46px;
+  background-color: #000000;
+  border-radius: 50%;
+  color: #31C770;
+  transform: translateY(-22px);
+}
+
+.nav-notch {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 60px;
+  background-color: #F7F4EF;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.nav-notch::before,
+.nav-notch::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  width: 12px;
+  height: 12px;
+  background: transparent;
+}
+
+.nav-notch::before {
+  left: -8px;
+  border-top-right-radius: 12px;
+  box-shadow: 4px -4px 0 2px #F7F4EF;
+}
+
+.nav-notch::after {
+  right: -8px;
+  border-top-left-radius: 12px;
+  box-shadow: -4px -4px 0 2px #F7F4EF;
+}
+
+
+/* PERFIL DEL SOCIO */
+
+.socio-perfil {
+  width: 100%;
+  margin-top: 80px;
+}
+
+.socio-perfil h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.socio-perfil-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.15);
+}
+
+.socio-avatar {
+  width: 65px;
+  height: 65px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: #F7F4EF;
+  margin-bottom: 18px;
+}
+
+.socio-avatar svg {
+  width: 35px;
+  height: 35px;
+}
+
+.socio-perfil-card h3 {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.socio-perfil-card p {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 25px;
+}
+
+.socio-cerrar-sesion {
+  width: 100%;
+  padding: 14px;
+  background-color: #2C2C2C;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.socio-cerrar-sesion:hover {
+  background-color: #444;
 }
