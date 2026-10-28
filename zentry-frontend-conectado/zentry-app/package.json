@@ -21,10 +21,12 @@
     "@angular/router": "^22.2.0",
     "@angular/ssr": "^22.2.2",
     "express": "^5.1.0",
+    "qrcode": "^1.5.4",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
+    "@types/qrcode": "^1.5.5",
     "@angular/build": "^22.2.2",
     "@angular/cli": "^22.2.2",
     "@angular/compiler-cli": "^22.2.0",

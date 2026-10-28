@@ -2,7 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { InvitacionStorageService } from '../invitaciones-activas/invitacion-storage.service';
+import { InvitacionService } from '../invitaciones-activas/invitacion.service';
 
 @Component({
   selector: 'app-generate-qr-concurrente',
@@ -41,8 +41,9 @@ export class GenerateQr2Component {
   calendarioAbierto: 'inicio' | 'fin' | null = null;
   mesVisible = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
   mensajeError = '';
+  generando = false;
 
-  constructor(private router: Router, private invitacionStorage: InvitacionStorageService) {}
+  constructor(private router: Router, private invitacionService: InvitacionService) {}
 
   seleccionarTipo(tipo: 'unica' | 'concurrente'): void {
     if (tipo === 'unica') {
@@ -280,6 +281,10 @@ export class GenerateQr2Component {
   }
 
   generarQR(): void {
+    if (this.generando) {
+      return;
+    }
+
     if (
       !this.invitacion.nombreVisitante.trim() ||
       !this.invitacion.dni.trim() ||
@@ -297,25 +302,21 @@ export class GenerateQr2Component {
     }
 
     this.mensajeError = '';
+    this.generando = true;
     const nuevaInvitacion = {
       tipo: this.tipoInvitacion,
       ...this.invitacion,
       dias: this.diasSeleccionados
     };
 
-    this.invitacionStorage.guardarEnBackend(nuevaInvitacion).subscribe({
+    this.invitacionService.guardarEnBackend(nuevaInvitacion).subscribe({
       next: () => {
         void this.router.navigate(['/invitaciones-activas']);
       },
-      error: () => {
-        try {
-          this.invitacionStorage.guardar(nuevaInvitacion);
-          void this.router.navigate(['/invitaciones-activas']);
-        } catch (error: unknown) {
-          this.mensajeError = error instanceof Error
-            ? error.message
-            : 'No se pudo guardar la invitación.';
-        }
+      error: (error: unknown) => {
+        console.error('No se pudo crear la invitación en el backend:', error);
+        this.generando = false;
+        this.mensajeError = 'No se pudo crear la invitación. Verificá la conexión con el servidor e intentá nuevamente.';
       }
     });
   }

@@ -211,6 +211,8 @@
     </section>
 
     <p class="form-error" *ngIf="mensajeError" role="alert">{{ mensajeError }}</p>
-    <button type="submit" class="btn-generar">Generar QR</button>
+    <button type="submit" class="btn-generar" [disabled]="generando">
+      {{ generando ? 'Generando…' : 'Generar QR' }}
+    </button>
   </form>
 </main>

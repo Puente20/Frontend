@@ -106,8 +106,8 @@
 
   <!-- Botón principal -->
   <div class="footer-action">
-    <button type="button" class="btn-generar" (click)="generarQR()">
-      Generar QR
+    <button type="button" class="btn-generar" [disabled]="generando" (click)="generarQR()">
+      {{ generando ? 'Generando…' : 'Generar QR' }}
     </button>
   </div>
 </div>

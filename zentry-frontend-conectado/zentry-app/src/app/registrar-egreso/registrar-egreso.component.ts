@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { InvitacionStorageService } from '../invitaciones-activas/invitacion-storage.service';
+import { InvitacionService } from '../invitaciones-activas/invitacion.service';
 
 @Component({
   selector: 'app-registrar-egreso',
@@ -19,7 +19,7 @@ export class RegistrarEgresoComponent {
   mensajeError: string = '';
   mensajeExito: string = '';
 
-  constructor(private router: Router, private invitacionStorage: InvitacionStorageService) {}
+  constructor(private router: Router, private invitacionService: InvitacionService) {}
 
   // Agregar una nueva persona
   agregarPersona(): void {
@@ -74,7 +74,7 @@ export class RegistrarEgresoComponent {
       return;
     }
 
-    this.invitacionStorage.registrarEgresoEnBackend(dnisLimpios).subscribe({
+    this.invitacionService.registrarEgresoEnBackend(dnisLimpios).subscribe({
       next: (res) => {
         this.mensajeExito = res.mensaje || `Se registraron correctamente los ${dnisLimpios.length} egresos en la base de datos.`;
       },

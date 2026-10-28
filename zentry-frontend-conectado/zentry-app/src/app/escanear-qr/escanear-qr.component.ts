@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { InvitacionStorageService } from '../invitaciones-activas/invitacion-storage.service';
+import { InvitacionService } from '../invitaciones-activas/invitacion.service';
 import { ActivityLogService } from '../services/activity-log.service';
 
 interface CodigoQRDetectado {
@@ -42,7 +42,7 @@ export class EscanearQrComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private invitacionStorage: InvitacionStorageService,
+    private invitacionService: InvitacionService,
     private activityLog: ActivityLogService
   ) {}
 
@@ -115,9 +115,9 @@ export class EscanearQrComponent implements AfterViewInit, OnDestroy {
   }
 
   private validarInvitacion(contenido: string): void {
-    const id = this.extraerIdInvitacion(contenido);
-    if (!id) {
-      this.estadoEscaneo = 'El QR no contiene un identificador de invitación válido.';
+    const token = contenido.trim();
+    if (!token) {
+      this.estadoEscaneo = 'El QR no contiene un token de invitación válido.';
       return;
     }
 
@@ -125,7 +125,7 @@ export class EscanearQrComponent implements AfterViewInit, OnDestroy {
     this.estadoEscaneo = 'Validando invitación…';
     this.mensajeError = '';
 
-    this.invitacionStorage.usarEnBackend(id).subscribe({
+    this.invitacionService.validarQrEnBackend(token).subscribe({
       next: () => {
         this.activityLog.registrar({
           tipo: 'visitante-aprobado',
@@ -143,42 +143,6 @@ export class EscanearQrComponent implements AfterViewInit, OnDestroy {
         this.validacionEnCurso = false;
       }
     });
-  }
-
-  private extraerIdInvitacion(contenido: string): string {
-    const valor = contenido.trim();
-    if (!valor) {
-      return '';
-    }
-
-    try {
-      const datos: unknown = JSON.parse(valor);
-      if (typeof datos === 'object' && datos !== null && 'id' in datos) {
-        const id = datos.id;
-        if (typeof id === 'string' || typeof id === 'number') {
-          return String(id);
-        }
-      }
-    } catch {
-      // The QR may contain the invitation ID directly or a URL.
-    }
-
-    try {
-      const url = new URL(valor, window.location.origin);
-      const idEnQuery = url.searchParams.get('id');
-      if (idEnQuery) {
-        return idEnQuery;
-      }
-
-      const coincidencia = url.pathname.match(/\/invitaciones\/([^/]+)/i);
-      if (coincidencia) {
-        return decodeURIComponent(coincidencia[1]);
-      }
-
-      return decodeURIComponent(url.pathname.split('/').filter(Boolean).pop() || '');
-    } catch {
-      return valor;
-    }
   }
 
   reintentarEscaneo(): void {

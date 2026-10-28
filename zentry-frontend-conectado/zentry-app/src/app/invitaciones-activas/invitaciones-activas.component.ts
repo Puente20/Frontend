@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { afterNextRender, Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Invitacion, InvitacionStorageService } from './invitacion-storage.service';
+import { Invitacion, InvitacionService } from './invitacion.service';
 
 @Component({
   selector: 'app-invitaciones-activas',
@@ -22,11 +22,13 @@ export class InvitacionesActivasComponent {
   readonly invitaciones = signal<Invitacion[]>([]);
   readonly cargando = signal(true);
   readonly error = signal('');
+  readonly errorQr = signal('');
+  readonly imagenesQr = signal<Record<string, string>>({});
   readonly invitacionAEliminar = signal<Invitacion | null>(null);
 
   constructor(
     private readonly router: Router,
-    private readonly invitacionStorage: InvitacionStorageService
+    private readonly invitacionService: InvitacionService
   ) {
     afterNextRender(() => this.cargarInvitaciones());
   }
@@ -34,23 +36,45 @@ export class InvitacionesActivasComponent {
   cargarInvitaciones(): void {
     this.cargando.set(true);
     this.error.set('');
-    this.invitacionStorage.listarActivasApi().subscribe({
+    this.invitacionService.listarActivasApi().subscribe({
       next: (datos) => {
         this.invitaciones.set(datos);
+        this.imagenesQr.set({});
         this.cargando.set(false);
+        void this.generarImagenesQr(datos);
       },
-      error: () => {
-        try {
-          this.invitaciones.set(this.invitacionStorage.listarActivas());
-        } catch (error: unknown) {
-          this.error.set(error instanceof Error
-            ? error.message
-            : 'No se pudieron cargar las invitaciones.');
-        } finally {
-          this.cargando.set(false);
-        }
+      error: (error: unknown) => {
+        console.error('No se pudieron cargar las invitaciones desde el backend:', error);
+        this.error.set('No se pudieron cargar las invitaciones. Verificá la conexión con el servidor e intentá nuevamente.');
+        this.cargando.set(false);
       }
     });
+  }
+
+  private async generarImagenesQr(invitaciones: Invitacion[]): Promise<void> {
+    this.errorQr.set('');
+    const invitacionesConToken = invitaciones.filter(
+      (invitacion): invitacion is Invitacion & { qrToken: string } =>
+        typeof invitacion.qrToken === 'string' && invitacion.qrToken.length > 0
+    );
+
+    try {
+      const { toDataURL } = await import('qrcode');
+      const pares = await Promise.all(
+        invitacionesConToken.map(async (invitacion) => [
+          invitacion.id,
+          await toDataURL(invitacion.qrToken, {
+            errorCorrectionLevel: 'M',
+            margin: 2,
+            width: 220
+          })
+        ] as const)
+      );
+      this.imagenesQr.set(Object.fromEntries(pares));
+    } catch (error: unknown) {
+      console.error('No se pudieron generar los códigos QR de las invitaciones:', error);
+      this.errorQr.set('No se pudieron mostrar los códigos QR. Actualizá la pantalla para intentar nuevamente.');
+    }
   }
 
   confirmarEliminacion(invitacion: Invitacion): void {
@@ -68,21 +92,15 @@ export class InvitacionesActivasComponent {
     }
 
     this.error.set('');
-    this.invitacionStorage.eliminarEnBackend(invitacion.id).subscribe({
+    this.invitacionService.eliminarEnBackend(invitacion.id).subscribe({
       next: () => {
         this.invitacionAEliminar.set(null);
         this.cargarInvitaciones();
       },
-      error: () => {
-        try {
-          this.invitacionStorage.eliminar(invitacion.id);
-          this.invitacionAEliminar.set(null);
-          this.cargarInvitaciones();
-        } catch (error: unknown) {
-          this.error.set(error instanceof Error
-            ? error.message
-            : 'No se pudo eliminar la invitación.');
-        }
+      error: (error: unknown) => {
+        console.error('No se pudo eliminar la invitación en el backend:', error);
+        this.error.set('No se pudo eliminar la invitación. Verificá la conexión con el servidor e intentá nuevamente.');
+        this.invitacionAEliminar.set(null);
       }
     });
   }

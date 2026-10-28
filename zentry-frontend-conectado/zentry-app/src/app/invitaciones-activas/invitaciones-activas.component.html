@@ -52,11 +52,23 @@
           Días habilitados: {{ invitacion.dias?.join(', ') }}
         </p>
 
+        <div class="qr-code" *ngIf="imagenesQr()[invitacion.id] as imagenQr">
+          <img [src]="imagenQr" [alt]="'Código QR de invitación para ' + invitacion.nombreVisitante" />
+          <p>Presentá este código QR al ingresar.</p>
+        </div>
+        <p class="qr-unavailable" *ngIf="!invitacion.qrToken">
+          El QR no está disponible para esta invitación.
+        </p>
+
         <button class="used-button" type="button" (click)="confirmarEliminacion(invitacion)">
           Eliminar invitación
         </button>
       </div>
     </ng-container>
+
+    <div class="empty-state-card" *ngIf="errorQr()" role="alert">
+      <p class="empty-state-text">{{ errorQr() }}</p>
+    </div>
 
     <div
       class="modal-overlay"
