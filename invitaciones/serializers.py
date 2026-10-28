@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 from administracion.models import PuntoAcceso, Socio, Lote
 from .models import Invitado, Invitacion, InvitacionHistorico, RegistroAcceso
+from .qr import crear_token_qr, obtener_dia_semana
 
 
 class InvitacionFrontendSerializer(serializers.ModelSerializer):
@@ -42,6 +43,7 @@ class InvitacionFrontendSerializer(serializers.ModelSerializer):
         nombre_completo = f"{instance.invitado.nombre} {instance.invitado.apellido}".strip()
         return {
             'id': str(instance.id),
+            'qrToken': crear_token_qr(instance.pk),
             'tipo': 'concurrente' if instance.tipo == 'recurrente' else 'unica',
             'nombreVisitante': nombre_completo,
             'dni': instance.invitado.dni,
@@ -52,6 +54,50 @@ class InvitacionFrontendSerializer(serializers.ModelSerializer):
             'creadaEn': instance.fecha_creacion.isoformat() if instance.fecha_creacion else timezone.now().isoformat(),
             'usadaEn': instance.usada_en.isoformat() if instance.usada_en else None,
         }
+
+    def validate(self, attrs):
+        raw = self.initial_data
+        tipo = raw.get('tipo', 'unica')
+        if tipo not in ('unica', 'concurrente', 'recurrente'):
+            raise serializers.ValidationError(
+                {'tipo': 'El tipo debe ser unica o concurrente.'}
+            )
+
+        dias = raw.get('dias') or []
+        if tipo in ('concurrente', 'recurrente') and not dias:
+            raise serializers.ValidationError(
+                {'dias': 'Debe seleccionar al menos un dia para una invitacion recurrente.'}
+            )
+        if tipo in ('concurrente', 'recurrente') and any(
+            not isinstance(dia, str) or obtener_dia_semana(dia) is None
+            for dia in dias
+        ):
+            raise serializers.ValidationError(
+                {'dias': 'Los dias deben ser nombres validos de la semana.'}
+            )
+
+        fechas = {}
+        for campo in ('fechaInicio', 'fechaFin'):
+            valor = raw.get(campo)
+            if not valor:
+                continue
+            try:
+                fechas[campo] = datetime.strptime(valor, '%Y-%m-%d').date()
+            except (TypeError, ValueError):
+                raise serializers.ValidationError(
+                    {campo: 'La fecha debe tener el formato AAAA-MM-DD.'}
+                )
+
+        if (
+            'fechaInicio' in fechas
+            and 'fechaFin' in fechas
+            and fechas['fechaFin'] < fechas['fechaInicio']
+        ):
+            raise serializers.ValidationError(
+                {'fechaFin': 'La fecha de fin no puede ser anterior a la fecha de inicio.'}
+            )
+
+        return attrs
 
     def create(self, validated_data):
         raw = self.initial_data
@@ -85,18 +131,20 @@ class InvitacionFrontendSerializer(serializers.ModelSerializer):
         fecha_visita = ahora
 
         if raw.get('fechaInicio'):
-            try:
-                dt_ini = datetime.strptime(raw['fechaInicio'], '%Y-%m-%d')
-                fecha_inicio = timezone.make_aware(dt_ini) if timezone.is_naive(dt_ini) else dt_ini
-            except ValueError:
-                pass
+            fecha_inicio = timezone.make_aware(
+                datetime.combine(
+                    datetime.strptime(raw['fechaInicio'], '%Y-%m-%d').date(),
+                    datetime.min.time(),
+                )
+            )
 
         if raw.get('fechaFin'):
-            try:
-                dt_fin = datetime.strptime(raw['fechaFin'], '%Y-%m-%d')
-                fecha_visita = timezone.make_aware(dt_fin) if timezone.is_naive(dt_fin) else dt_fin
-            except ValueError:
-                pass
+            fecha_visita = timezone.make_aware(
+                datetime.combine(
+                    datetime.strptime(raw['fechaFin'], '%Y-%m-%d').date(),
+                    datetime.min.time(),
+                )
+            )
 
         invitacion = Invitacion.objects.create(
             invitado=invitado,

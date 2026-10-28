@@ -74,6 +74,13 @@ Van a existir invitaciones y luego un historico de invitaciones, donde se van a 
 - InvitacionHistorico
 - RegistroAcceso
 
+Para generar el QR, el frontend debe enviar la invitacion a `POST /api/invitaciones/`.
+La respuesta incluye `qrToken`; el frontend codifica ese valor como QR (no los datos
+personales del invitado). Al escanearlo, debe enviar `{"token": "<qrToken>"}` a
+`POST /api/invitaciones/validar-qr/`. El backend verifica la vigencia antes de
+registrar el ingreso: las invitaciones unicas se aceptan una vez y las recurrentes
+se aceptan como maximo una vez por dia habilitado, dentro del rango de fechas elegido.
+
 ### Reservas
 
 Se encarga de las reservas para los espacios comunes y la trazabilidad de los mismos, registrando el estado y problemas si existen
