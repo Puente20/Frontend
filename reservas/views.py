@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from .models import LugarComun, Reserva
 from .serializers import InstalacionBarrioSerializer, ReservaSerializer
 from invitaciones.models import InvitacionHistorico
+from base.permissions import IsAuthenticated
 
 
 def asegurar_instalaciones_iniciales():
@@ -107,7 +108,7 @@ def ultimos_movimientos_view(request):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def alerta_panico_view(request):
     """Registra la alerta del botón de pánico enviada desde PanicButtonComponent."""
     return Response({

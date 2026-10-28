@@ -1,29 +1,35 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework import viewsets, status
-from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.decorators import action, api_view, permission_classes, throttle_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
+from rest_framework.throttling import AnonRateThrottle
 
-from base.views import ActiveViewSet
+import base.views as baseviews
+from base import permissions
 from .models import Lote, PuntoAcceso, Socio, Account
 from .serializers import LoteSerializer, PuntoAccesoSerializer, SocioSerializer
+from . import services
 
 
-class LoteViewSet(viewsets.ModelViewSet):
+class LoteViewSet(baseviews.BaseViewSet):
     queryset = Lote.objects.all().order_by('numero')
     serializer_class = LoteSerializer
+    permission_classes = [permissions.IsAdminRole]
 
 
-class PuntoAccesoViewSet(viewsets.ModelViewSet):
+class PuntoAccesoViewSet(baseviews.BaseViewSet):
     queryset = PuntoAcceso.objects.all()
     serializer_class = PuntoAccesoSerializer
+    permission_classes = [permissions.IsAdminRole]
 
-
-class SocioViewSet(ActiveViewSet):
+class SocioViewSet(baseviews.ActiveViewSet):
     queryset = Socio.all_objects.select_related('lote').all().order_by('id')
     serializer_class = SocioSerializer
+    permission_classes = [permissions.IsAdminRole]
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -31,6 +37,31 @@ class SocioViewSet(ActiveViewSet):
         if tipo in ('propietario', 'inquilino'):
             qs = qs.filter(tipo=tipo)
         return qs
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            with transaction.atomic():
+                instance.is_active = False
+                instance.save(update_fields=['is_active'])
+                if instance.account_id:
+                    services.deactivate_account(instance.account)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['PUT'])
+    def reactivate(self, request, *args, **kwargs):
+        instance = self.get_object()
+        try:
+            with transaction.atomic():
+                instance.is_active = True
+                instance.save(update_fields=['is_active'])
+                if instance.account_id:
+                    services.activate_account(instance.account)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'error':str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['GET'])
     def propietarios(self, request):
@@ -44,9 +75,12 @@ class SocioViewSet(ActiveViewSet):
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
 
+class LoginRateThrottle(AnonRateThrottle):
+    scope = 'login'
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([LoginRateThrottle])
 def login_view(request):
     """
     Autentica cuentas registradas según el rol solicitado.
@@ -135,6 +169,7 @@ def login_view(request):
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
+@throttle_classes([LoginRateThrottle])
 def recuperar_contrasena_view(request):
     correo = (request.data.get('correo') or request.data.get('email') or '').strip()
     if not correo:
