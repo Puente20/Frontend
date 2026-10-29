@@ -2,10 +2,10 @@ from django.http import StreamingHttpResponse
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, views
 
 from base.permissions import IsGuardiaRole, IsAuthenticated, IsAdminRole
-from .models import Alerta
+from .models import Alerta, AlertaState
 from .serializers import AlertaValidation, AlertaSerializer
 from .services import eventos
 
@@ -31,6 +31,26 @@ def stream(request):
     )
     response['Cache-Control'] = 'no-cache'
     return response
+
+class AlertaRecepcionarView(views.APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsGuardiaRole]
+
+    def put(self, request, pk):
+            try:
+                alerta = Alerta.objects.get(estado=AlertaState.enviada, pk=pk)
+            except Alerta.DoesNotExist:
+                return Response({"error": "La alerta no existe o ya se respondio"}, status=status.HTTP_404_NOT_FOUND)
+
+            rechazada = request.data.get('rechazada')
+            alerta.estado = AlertaState.confirmada
+            if rechazada:
+                motivo = request.data.get('motivo_rechazo')
+                alerta.estado = AlertaState.rechazada
+                alerta.motivo_rechazo = motivo
+            alerta.save()
+
+            return Response({'La alerta fue recepcionada'}, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
