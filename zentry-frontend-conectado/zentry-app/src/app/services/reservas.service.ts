@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import type { InstalacionBarrio, SolicitudReserva } from '../nueva-reserva/nueva-reserva.component';
+import { InstalacionBarrio, SolicitudReserva } from '../nueva-reserva/nueva-reserva.component';
 import { MovimientoResidente } from './activity-log.service';
 
 const RESERVAS_LOCALES_KEY = 'zentry_reservas_locales';
@@ -91,7 +91,7 @@ export class ReservasService {
     return this.http.get<MovimientoResidente[]>(`${this.baseUrl}/movimientos/`);
   }
 
-  enviarAlertaPanico(): Observable<{ status: string; mensaje: string }> {
-    return this.http.post<{ status: string; mensaje: string }>(`${this.baseUrl}/eventos/panico/`, {});
+  enviarAlertaPanico(): Observable<{ mensaje: string }> {
+    return this.http.post<{ mensaje: string }>(`${this.baseUrl}/eventos/panico/`, {});
   }
 }
