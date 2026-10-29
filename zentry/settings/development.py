@@ -34,5 +34,4 @@ INSTALLED_APPS = [
     'invitaciones',
     'reservas',
     'barrios',
-    'emergencias',
 ]
