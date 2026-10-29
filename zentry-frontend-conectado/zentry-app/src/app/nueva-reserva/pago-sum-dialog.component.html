@@ -1,0 +1,82 @@
+<div class="pago-overlay" role="presentation">
+  <section
+    class="pago-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pago-titulo"
+    aria-describedby="pago-descripcion">
+    <header class="pago-header">
+      <div>
+        <h2 id="pago-titulo">Pago de reserva</h2>
+        <p id="pago-descripcion">Monto a pagar: <strong>{{ montoFormateado }}</strong></p>
+      </div>
+      <span class="pago-icono" aria-hidden="true">▣</span>
+    </header>
+
+    <div class="pago-contenido">
+      <h3>Medios de pago</h3>
+
+      <label class="medio-pago">
+        <input
+          type="radio"
+          name="medioPagoSum"
+          value="saldo"
+          [ngModel]="medioPagoSeleccionado"
+          (ngModelChange)="medioPagoSeleccionadoChange.emit($event)"
+          [disabled]="procesando">
+        <span class="medio-pago-icono billetera" aria-hidden="true">$</span>
+        <span class="medio-pago-detalle">
+          <strong>Dinero disponible</strong>
+          <small>Saldo: $1.440.000</small>
+        </span>
+      </label>
+
+      <label class="medio-pago">
+        <input
+          type="radio"
+          name="medioPagoSum"
+          value="tarjeta-1234"
+          [ngModel]="medioPagoSeleccionado"
+          (ngModelChange)="medioPagoSeleccionadoChange.emit($event)"
+          [disabled]="procesando">
+        <span class="medio-pago-icono tarjeta" aria-hidden="true">VISA</span>
+        <span class="medio-pago-detalle"><strong>ICBC •••• 1234</strong></span>
+      </label>
+
+      <label class="medio-pago">
+        <input
+          type="radio"
+          name="medioPagoSum"
+          value="tarjeta-4567"
+          [ngModel]="medioPagoSeleccionado"
+          (ngModelChange)="medioPagoSeleccionadoChange.emit($event)"
+          [disabled]="procesando">
+        <span class="medio-pago-icono tarjeta" aria-hidden="true">VISA</span>
+        <span class="medio-pago-detalle"><strong>ICBC •••• 4567</strong></span>
+      </label>
+
+      <p class="pago-simulacion">Simulación de una pasarela externa. No se realizará ningún cobro real.</p>
+
+      <p *ngIf="mensajeError" class="pago-error" role="alert">
+        {{ mensajeError }}
+      </p>
+    </div>
+
+    <footer class="pago-acciones">
+      <button
+        type="button"
+        class="pago-boton cancelar"
+        [disabled]="procesando"
+        (click)="cancelarPago.emit()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="pago-boton confirmar"
+        [disabled]="procesando"
+        (click)="confirmarPago.emit()">
+        {{ procesando ? 'Procesando pago…' : 'Confirmar pago' }}
+      </button>
+    </footer>
+  </section>
+</div>

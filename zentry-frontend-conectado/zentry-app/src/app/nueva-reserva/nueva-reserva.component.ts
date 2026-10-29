@@ -4,6 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ReservasService } from '../services/reservas.service';
 import { ActivityLogService } from '../services/activity-log.service';
+import { MedioPagoSum, SimuladorPagoService } from '../services/simulador-pago.service';
+import { finalize, switchMap } from 'rxjs';
+import { PagoSumDialogComponent } from './pago-sum-dialog.component';
 
 export interface InstalacionBarrio {
   id: string;
@@ -39,7 +42,7 @@ export interface SolicitudReserva {
 @Component({
   selector: 'nueva-reserva, app-nueva-reserva',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PagoSumDialogComponent],
   templateUrl: './nueva-reserva.component.html',
   styleUrl: './nueva-reserva.component.css'
 })
@@ -88,11 +91,16 @@ export class NuevaReservaComponent implements OnInit {
   mensajeConfirmacion: string = '';
   mensajeErrorReserva: string = '';
   procesandoReserva = false;
+  mostrarPagoSum = false;
+  mensajeErrorPago = '';
+  medioPagoSeleccionado: MedioPagoSum = 'saldo';
+  readonly montoReservaSum = 300000;
 
   constructor(
     private router: Router,
     private reservasService: ReservasService,
     private activityLog: ActivityLogService,
+    private simuladorPago: SimuladorPagoService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -188,6 +196,7 @@ export class NuevaReservaComponent implements OnInit {
     this.instalacionSeleccionada = instalacion;
     this.listaInstalacionesAbierta = false;
     this.mensajeConfirmacion = '';
+    this.mensajeErrorReserva = '';
     this.generarRangosHorarios(instalacion);
   }
 
@@ -227,6 +236,7 @@ export class NuevaReservaComponent implements OnInit {
   seleccionarHorario(rango: string): void {
     this.horarioSeleccionado = rango;
     this.mensajeConfirmacion = '';
+    this.mensajeErrorReserva = '';
   }
 
   get tituloMesVisible(): string {
@@ -280,6 +290,7 @@ export class NuevaReservaComponent implements OnInit {
 
     this.fechaSeleccionadaISO = dia.fecha;
     this.mensajeConfirmacion = '';
+    this.mensajeErrorReserva = '';
 
     if (!dia.mesActual) {
       const [anio, mes] = dia.fecha.split('-').map(Number);
@@ -288,14 +299,13 @@ export class NuevaReservaComponent implements OnInit {
   }
 
   get textoBotonPrincipal(): string {
-    return this.instalacionSeleccionada?.tipoAccion === 'senar'
+    return this.esReservaSum
       ? 'Señar'
       : 'Confirmar Reserva';
   }
 
   /**
-   * Confirma la reserva de cancha o registra la seña del SUM,
-   * la agrega en la lista de "Últimos movimientos" del residente y redirige a /resident-home.
+   * Solicita el pago simulado antes de reservar el SUM; las demás instalaciones se reservan directamente.
    */
   procesarReserva(): void {
     if (
@@ -306,10 +316,8 @@ export class NuevaReservaComponent implements OnInit {
     ) {
       return;
     }
-
     this.mensajeErrorReserva = '';
     this.mensajeConfirmacion = '';
-    this.procesandoReserva = true;
 
     const payload: SolicitudReserva = {
       instalacionId: this.instalacionSeleccionada.id,
@@ -320,34 +328,129 @@ export class NuevaReservaComponent implements OnInit {
       tipoOperacion: this.instalacionSeleccionada.tipoAccion
     };
 
-    this.reservasService.crearReserva(payload).subscribe({
-      next: (movimientoGuardado) => {
+    if (this.reservasService.existeReservaLocal(payload)) {
+      this.mensajeErrorReserva = 'Ya existe una reserva para este espacio, fecha y horario en este navegador.';
+      return;
+    }
+
+    if (this.esReservaSum) {
+      this.mensajeErrorPago = '';
+      this.mostrarPagoSum = true;
+      return;
+    }
+
+    this.registrarReserva(payload);
+  }
+
+  confirmarPagoSum(): void {
+    if (this.procesandoReserva || !this.mostrarPagoSum || !this.esReservaSum) {
+      return;
+    }
+
+    this.mensajeErrorPago = '';
+    const payload = this.crearSolicitudReserva();
+    if (this.reservasService.existeReservaLocal(payload)) {
+      this.mensajeErrorPago = 'Ya existe una reserva para este espacio, fecha y horario en este navegador.';
+      return;
+    }
+
+    this.procesandoReserva = true;
+    let pagoSimuladoAprobado = false;
+
+    this.simuladorPago.simularPago(this.montoReservaSum, this.medioPagoSeleccionado).pipe(
+      switchMap((pago) => {
+        pagoSimuladoAprobado = true;
+        console.info('Pago de prueba aprobado:', pago.transaccionId);
+        return this.reservasService.crearReserva(payload);
+      }),
+      finalize(() => {
         this.procesandoReserva = false;
-        console.log('Reserva registrada en BD:', movimientoGuardado);
-        const [anio, mes, dia] = this.fechaSeleccionadaISO.split('-');
-        const fechaFormateada = `${dia}/${mes}/${anio}`;
-        const esSum = this.instalacionSeleccionada.id === 'sum' ||
-          this.instalacionSeleccionada.tipoAccion === 'senar';
-        this.activityLog.registrar({
-          tipo: 'reserva',
-          descripcion: esSum
-            ? 'SUM reservado'
-            : `${this.instalacionSeleccionada.nombre} reservada`,
-          ubicacion: this.loteResidenteActual,
-          detalle: esSum
-            ? `Fecha: ${fechaFormateada}`
-            : `Fecha: ${fechaFormateada} (${this.horarioSeleccionado})`
-        });
         this.cdr.markForCheck();
-        void this.router.navigate(['/resident-home']);
+      })
+    ).subscribe({
+      next: (movimientoGuardado) => {
+        this.mostrarPagoSum = false;
+        this.completarReserva(movimientoGuardado, payload);
+      },
+      error: (err: unknown) => {
+        console.error('No se pudo completar el pago simulado o registrar la reserva:', err);
+        this.mensajeErrorPago = pagoSimuladoAprobado
+          ? 'El pago fue simulado, pero no se pudo guardar la reserva. No se realizó ningún cobro real; intentá nuevamente.'
+          : 'No se pudo completar la simulación del pago. No se realizó ningún cobro; intentá nuevamente.';
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  cancelarPagoSum(): void {
+    if (this.procesandoReserva) {
+      return;
+    }
+    this.mostrarPagoSum = false;
+    this.mensajeErrorPago = '';
+  }
+
+  private registrarReserva(payload: SolicitudReserva): void {
+    this.procesandoReserva = true;
+    this.reservasService.crearReserva(payload).pipe(
+      finalize(() => {
+        this.procesandoReserva = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
+      next: (movimientoGuardado) => {
+        this.completarReserva(movimientoGuardado, payload);
       },
       error: (err) => {
         console.error('No se pudo registrar la reserva en el backend:', err);
-        this.procesandoReserva = false;
         this.mensajeErrorReserva = 'No se pudo confirmar la reserva. Revisá la conexión e intentá nuevamente.';
         this.cdr.markForCheck();
       }
     });
+  }
+
+  private crearSolicitudReserva(): SolicitudReserva {
+    return {
+      instalacionId: this.instalacionSeleccionada.id,
+      instalacionNombre: this.instalacionSeleccionada.nombre,
+      fecha: this.fechaSeleccionadaISO,
+      horario: this.horarioSeleccionado,
+      cantidadMaximaPersonas: this.instalacionSeleccionada.maxPersonas,
+      tipoOperacion: this.instalacionSeleccionada.tipoAccion
+    };
+  }
+
+  private completarReserva(movimientoGuardado: unknown, payload: SolicitudReserva): void {
+    console.log('Reserva registrada en BD:', movimientoGuardado);
+    this.reservasService.registrarReservaLocal(payload);
+    const [anio, mes, dia] = payload.fecha.split('-');
+    const fechaFormateada = `${dia}/${mes}/${anio}`;
+    const esSum = payload.instalacionId === 'sum' || payload.tipoOperacion === 'senar';
+    this.activityLog.registrar({
+      tipo: 'reserva',
+      descripcion: esSum
+        ? 'SUM reservado'
+        : `${payload.instalacionNombre} reservada`,
+      ubicacion: this.loteResidenteActual,
+      detalle: esSum
+        ? `Fecha: ${fechaFormateada}`
+        : `Fecha: ${fechaFormateada} (${payload.horario})`
+    });
+    this.cdr.markForCheck();
+    void this.router.navigate(['/resident-home']);
+  }
+
+  private get esReservaSum(): boolean {
+    const normalizar = (valor: string | null | undefined): string =>
+      (valor ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase('es-AR')
+        .trim();
+
+    return normalizar(this.instalacionSeleccionada?.id) === 'sum' ||
+      normalizar(this.instalacionSeleccionada?.nombre).includes('sum') ||
+      normalizar(this.instalacionSeleccionada?.tipoAccion) === 'senar';
   }
 
   volver(): void {
@@ -377,6 +480,7 @@ export class NuevaReservaComponent implements OnInit {
   @HostListener('document:keydown.escape')
   cerrarDropdownConEscape(): void {
     this.listaInstalacionesAbierta = false;
+    this.cancelarPagoSum();
   }
 
   private formatearFechaISO(fecha: Date): string {

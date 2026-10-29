@@ -15,6 +15,7 @@
         </svg>
       </button>
     </div>
+
   </header>
 
   <!-- Título Principal y Fecha -->
@@ -189,7 +190,7 @@
     <button
       type="button"
       class="btn-submit-reserva"
-      [class.btn-senar]="instalacionSeleccionada.tipoAccion === 'senar'"
+      [class.btn-senar]="esReservaSum"
       [disabled]="procesandoReserva"
       (click)="procesarReserva()">
       {{ procesandoReserva ? 'Procesando…' : textoBotonPrincipal }}
@@ -197,3 +198,14 @@
   </div>
 
 </div>
+
+<app-pago-sum-dialog
+  *ngIf="mostrarPagoSum"
+  [monto]="montoReservaSum"
+  [medioPagoSeleccionado]="medioPagoSeleccionado"
+  [procesando]="procesandoReserva"
+  [mensajeError]="mensajeErrorPago"
+  (medioPagoSeleccionadoChange)="medioPagoSeleccionado = $event"
+  (confirmarPago)="confirmarPagoSum()"
+  (cancelarPago)="cancelarPagoSum()">
+</app-pago-sum-dialog>

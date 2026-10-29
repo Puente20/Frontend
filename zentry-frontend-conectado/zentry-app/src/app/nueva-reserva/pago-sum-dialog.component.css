@@ -1,0 +1,155 @@
+:host {
+  display: block;
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+}
+
+.pago-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.62);
+}
+
+.pago-modal {
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  border: 2px solid #2c2c2c;
+  border-radius: 16px;
+  background: #f7f4ef;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+}
+
+.pago-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid #aaa7a1;
+}
+
+.pago-header h2 {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+
+.pago-header p {
+  margin: 0;
+  color: #4a4a47;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.pago-icono {
+  font-size: 25px;
+}
+
+.pago-contenido {
+  padding: 12px 16px 4px;
+}
+
+.pago-contenido h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.medio-pago {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.medio-pago input {
+  margin: 0;
+  accent-color: #178f4a;
+}
+
+.medio-pago-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 25px;
+  height: 25px;
+  flex: 0 0 25px;
+  border: 1px solid #c6c6c6;
+  border-radius: 50%;
+  background: #fff;
+  color: #12518e;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.medio-pago-icono.billetera {
+  background: #149fce;
+  color: #fff;
+  font-size: 15px;
+}
+
+.medio-pago-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+}
+
+.medio-pago-detalle small {
+  color: #555;
+  font-size: 9px;
+}
+
+.pago-simulacion {
+  margin: 10px 0 8px;
+  color: #666;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.pago-error {
+  margin: 8px 0;
+  color: #a1111e;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.pago-acciones {
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px 14px;
+}
+
+.pago-boton {
+  min-height: 42px;
+  flex: 1;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.pago-boton.cancelar {
+  background: #fff;
+  color: #333;
+}
+
+.pago-boton.confirmar {
+  background: #168d46;
+  color: #fff;
+}
+
+.pago-boton:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
