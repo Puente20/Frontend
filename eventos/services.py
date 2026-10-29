@@ -1,0 +1,27 @@
+import json
+import time
+
+from django.db import close_old_connections
+
+from .models import Alerta, AlertaState
+
+
+def eventos():
+    yield ': ok\n\n'
+    while True:
+        close_old_connections()
+        alertas = Alerta.objects.filter(
+            estado=AlertaState.pendiente,
+        ).select_related('socio').order_by('id')
+        if not alertas:
+            yield ': ping\n\n'
+        for alerta in alertas:
+            data = json.dumps({
+                'alerta_id': alerta.id,
+                'lote': alerta.lote,
+                'socio': alerta.socio.apellido_nombre(),
+            })
+            alerta.estado = AlertaState.enviada
+            alerta.save()
+            yield f'data: {data}\n\n'
+        time.sleep(1)

@@ -105,13 +105,3 @@ def ultimos_movimientos_view(request):
 
     movimientos.sort(key=lambda x: x.get('fechaRegistro', ''), reverse=True)
     return Response(movimientos)
-
-
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def alerta_panico_view(request):
-    """Registra la alerta del botón de pánico enviada desde PanicButtonComponent."""
-    return Response({
-        'status': 'ok',
-        'mensaje': 'Alerta de emergencia recibida en Seguridad y protocolo activado.'
-    })

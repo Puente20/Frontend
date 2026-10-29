@@ -7,7 +7,7 @@ from .models import LugarComun, Reserva
 
 class InstalacionBarrioSerializer(serializers.ModelSerializer):
     """
-    Serializer con la estructura exacta de `InstalacionBarrio` que espera `NuevaReservaComponent`.
+    Serializer con la estructura exacta de `InstalacionBarrio``.
     """
     id = serializers.CharField(source='codigo')
     duracionMinutos = serializers.IntegerField(source='duracion_minutos', allow_null=True)

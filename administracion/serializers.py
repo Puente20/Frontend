@@ -6,8 +6,14 @@ from django.db import transaction
 
 from .models import Lote, PuntoAcceso, Socio, Administrador, Guardia, Proveedor, Account
 
+class LoteSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Lote
+        fields = ['id', 'numero', 'estado']
 
 class LoteSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Lote
         fields = ['id', 'numero', 'estado']
@@ -17,6 +23,16 @@ class PuntoAccesoSerializer(serializers.ModelSerializer):
         model = PuntoAcceso
         fields = ['id', 'nombre', 'tipo', 'estado']
 
+class SocioSimpleSerializer(serializers.ModelSerializer):
+    nombre_completo = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Socio
+        fields = ['id', 'nombre_completo', 'telefono', 'tipo']
+
+    def get_nombre_completo(self, obj):
+        return f"{obj.nombre} {obj.apellido}".strip()
+    
 class SocioSerializer(serializers.ModelSerializer):
     lote_numero = serializers.IntegerField(write_only=True, required=False)
     email = serializers.EmailField()
