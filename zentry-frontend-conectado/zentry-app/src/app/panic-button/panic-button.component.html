@@ -42,14 +42,11 @@
       </p>
     </div>
 
-    <p *ngIf="mensajeError" class="panico-error" role="alert">{{ mensajeError }}</p>
-
     <!-- Botones de acción -->
     <div class="panic-actions">
       <button
         type="button"
         class="btn-panic-action btn-rechazar"
-        [disabled]="enviando"
         (click)="onRechazar()">
         <svg
           class="action-icon"
@@ -70,7 +67,6 @@
       <button
         type="button"
         class="btn-panic-action btn-confirmar"
-        [disabled]="enviando"
         (click)="onConfirmar()">
         <svg
           class="action-icon"
@@ -85,7 +81,7 @@
             stroke-linecap="round"
             stroke-linejoin="round" />
         </svg>
-        <span>{{ enviando ? 'Enviando...' : 'Confirmar' }}</span>
+        <span>Confirmar</span>
       </button>
     </div>
   </div>

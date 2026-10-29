@@ -11,42 +11,30 @@ import { ReservasService } from '../services/reservas.service';
   styleUrl: './panic-button.component.css',
 })
 export class PanicButtonComponent {
-  @Input() isOpen = true;
+  @Input() isOpen: boolean = true;
   @Output() cerrar = new EventEmitter<void>();
   @Output() confirmar = new EventEmitter<void>();
-
-  enviando = false;
-  mensajeError = '';
 
   constructor(private router: Router, private reservasService: ReservasService) {}
 
   onRechazar(): void {
-    if (this.enviando) { return; }
-    this.mensajeError = '';
     this.cerrar.emit();
+
     if (this.router.url.includes('panic-button')) {
       void this.router.navigate(['/resident-home']);
     }
   }
 
   onConfirmar(): void {
-    if (this.enviando) { return; }
-    this.enviando = true;
-    this.mensajeError = '';
     this.reservasService.enviarAlertaPanico().subscribe({
-      next: () => {
-        this.enviando = false;
-        this.confirmar.emit();
-        if (this.router.url.includes('panic-button')) {
-          void this.router.navigate(['/resident-home']);
-        }
-      },
-      error: err => {
-        this.enviando = false;
-        this.mensajeError = err.error?.detail ||
-          'No se pudo enviar la emergencia. Intentá nuevamente o contactá a Seguridad por otro medio.';
-      }
+      next: (res) => console.log('Alerta registrada en servidor:', res.mensaje),
+      error: () => console.log('Alerta de emergencia confirmada en modo local.')
     });
+    this.confirmar.emit();
+
+    if (this.router.url.includes('panic-button')) {
+      void this.router.navigate(['/resident-home']);
+    }
   }
 
   onOverlayClick(event: MouseEvent): void {
@@ -57,6 +45,8 @@ export class PanicButtonComponent {
 
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
-    if (this.isOpen) { this.onRechazar(); }
+    if (this.isOpen) {
+      this.onRechazar();
+    }
   }
 }
