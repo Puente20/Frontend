@@ -5,14 +5,13 @@ from administracion.serializers import LoteSimpleSerializer, SocioSimpleSerializ
 from administracion.models import Lote, Socio
 
 class AlertaValidation(serializers.ModelSerializer):
-    estado = serializers.ChoiceField(choices=AlertaState.CHOICES)
     razon = serializers.CharField()
     lote = serializers.PrimaryKeyRelatedField(queryset=Lote.objects.all())
     socio = serializers.PrimaryKeyRelatedField(queryset=Socio.objects.all())
 
     class Meta:
         model = BotonPanico
-        fields = ['estado', 'razon', 'lote', 'socio']
+        fields = ['razon', 'lote', 'socio']
 
     def create(self, validated_data):
         socio = validated_data.pop('socio')

@@ -18,8 +18,9 @@ def eventos():
         for alerta in alertas:
             data = json.dumps({
                 'alerta_id': alerta.id,
-                'lote': alerta.lote,
-                'socio': alerta.socio.apellido_nombre(),
+                'nro_lote': alerta.lote,
+                'telefono': alerta.created_by.telefono,
+                'razon': alerta.razon,
             })
             alerta.estado = AlertaState.enviada
             alerta.save()
