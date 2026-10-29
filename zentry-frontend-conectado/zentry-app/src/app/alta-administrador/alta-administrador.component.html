@@ -35,6 +35,18 @@
     </div>
 
     <div class="form-group">
+      <label for="dni" class="input-label">DNI</label>
+      <input
+        id="dni"
+        name="dni"
+        type="text"
+        inputmode="numeric"
+        class="pill-input"
+        [(ngModel)]="administrador.dni"
+        required>
+    </div>
+
+    <div class="form-group">
       <label for="email" class="input-label">Correo electrónico</label>
       <input
         id="email"
@@ -60,18 +72,20 @@
     </div>
 
     <p
-      *ngIf="mensajeFormulario"
+      *ngIf="mensajeFormulario()"
       class="form-message"
-      [class.form-message-error]="tipoMensaje === 'error'"
-      [class.form-message-info]="tipoMensaje === 'info'"
+      [class.form-message-error]="tipoMensaje() === 'error'"
+      [class.form-message-info]="tipoMensaje() === 'info'"
       role="status"
       aria-live="polite">
-      {{ mensajeFormulario }}
+      {{ mensajeFormulario() }}
     </p>
 
     <div class="form-actions">
       <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
-      <button type="submit" class="btn-dar-alta">Dar alta</button>
+      <button type="submit" class="btn-dar-alta" [disabled]="guardando()">
+        {{ guardando() ? 'Guardando...' : 'Dar alta' }}
+      </button>
     </div>
   </form>
 </main>
