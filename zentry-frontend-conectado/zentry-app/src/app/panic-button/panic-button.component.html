@@ -67,7 +67,7 @@
       <button
         type="button"
         class="btn-panic-action btn-confirmar"
-        (click)="onConfirmar()">
+        (click)="onConfirmar()" [disabled]="enviando">
         <svg
           class="action-icon"
           viewBox="0 0 24 24"
@@ -84,5 +84,6 @@
         <span>Confirmar</span>
       </button>
     </div>
+    <p *ngIf="errorMensaje" role="alert" class="error-emergencia">{{ errorMensaje }}</p>
   </div>
 </div>

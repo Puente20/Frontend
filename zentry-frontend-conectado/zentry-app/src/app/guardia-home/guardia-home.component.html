@@ -63,3 +63,22 @@
   </button>
 
 </main>
+<div class="emergencia-fondo" *ngIf="alertaActual as alerta" role="alertdialog" aria-modal="true" aria-labelledby="emergencia-titulo">
+  <section class="emergencia-modal">
+    <div class="emergencia-cabecera">¡ALERTA DE EMERGENCIA!</div>
+    <div class="emergencia-contenido">
+      <p class="emergencia-urgencia">Un socio solicitó asistencia inmediata</p>
+      <dl>
+        <dt>Nombre completo</dt><dd>{{ alerta.socio?.nombre_completo || 'No registrado' }}</dd>
+        <dt>Lote</dt><dd>{{ alerta.lote?.numero ?? 'Sin lote' }}</dd>
+        <dt>Teléfono</dt><dd>{{ alerta.socio?.telefono || 'No registrado' }}</dd>
+      </dl>
+      <p *ngIf="errorAlerta" class="emergencia-error" role="alert">{{ errorAlerta }}</p>
+      <div class="emergencia-acciones">
+        <button class="enviar-movil" [disabled]="procesando" (click)="responder('enviar_movil')">Enviar móvil</button>
+        <button class="rechazar-alerta" [disabled]="procesando" (click)="responder('rechazar')">Rechazar</button>
+      </div>
+      <p class="emergencia-ayuda">La alerta permanece activa hasta que se registre una respuesta.</p>
+    </div>
+  </section>
+</div>
