@@ -10,8 +10,13 @@ from rest_framework.throttling import AnonRateThrottle
 
 import base.views as baseviews
 from base import permissions
-from .models import Lote, PuntoAcceso, Socio, Account
-from .serializers import LoteSerializer, PuntoAccesoSerializer, SocioSerializer
+from .models import Lote, PuntoAcceso, Socio, Guardia, Account
+from .serializers import (
+    GuardiaSerializer,
+    LoteSerializer,
+    PuntoAccesoSerializer,
+    SocioSerializer,
+)
 from . import services
 
 
@@ -74,6 +79,32 @@ class SocioViewSet(baseviews.ActiveViewSet):
         qs = self.get_queryset().filter(tipo='inquilino')
         serializer = self.get_serializer(qs, many=True)
         return Response(serializer.data)
+
+
+class GuardiaViewSet(baseviews.ActiveViewSet):
+    queryset = Guardia.all_objects.select_related('account__user').all().order_by('id')
+    serializer_class = GuardiaSerializer
+    permission_classes = [permissions.IsAdminRole]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        with transaction.atomic():
+            instance.is_active = False
+            instance.save(update_fields=['is_active'])
+            if instance.account_id and instance.account.is_active:
+                services.deactivate_account(instance.account)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=True, methods=['PUT'])
+    def reactivate(self, request, *args, **kwargs):
+        instance = self.get_object()
+        with transaction.atomic():
+            instance.is_active = True
+            instance.save(update_fields=['is_active'])
+            if instance.account_id and not instance.account.is_active:
+                services.activate_account(instance.account)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class LoginRateThrottle(AnonRateThrottle):
     scope = 'login'

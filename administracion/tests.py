@@ -8,7 +8,7 @@ from django.core.management import call_command
 from django.urls import reverse
 from rest_framework.test import APIClient, APITestCase
 
-from .models import Account, Lote, Socio
+from .models import Account, Guardia, Lote, Socio
 
 
 class AdministratorLoginTests(APITestCase):
@@ -322,3 +322,132 @@ class GuardLoginTests(APITestCase):
                 )
 
         self.assertEqual(User.objects.count(), user_count)
+
+
+class GuardiaManagementTests(APITestCase):
+    def setUp(self):
+        self.admin = User.objects.create_user(
+            username='admin-guardias',
+            email='admin-guardias@example.com',
+            password='password-admin-123',
+        )
+        Account.objects.create(user=self.admin, role='admin')
+        self.client.force_authenticate(user=self.admin)
+
+    def test_admin_can_create_guardia_and_guardia_can_login(self):
+        email = 'nuevo.guardia@example.com'
+        password = 'password-guardia-123'
+        response = self.client.post(
+            reverse('guardias-list'),
+            {
+                'nombre': 'Nora',
+                'email': email,
+                'password': password,
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertNotIn('password', response.data)
+        self.assertEqual(response.data['nombre'], 'Nora')
+        guardia = Guardia.objects.get(pk=response.data['id'])
+        self.assertEqual(guardia.dni, '')
+        self.assertEqual(guardia.account.role, 'guardia')
+        self.assertTrue(guardia.account.user.check_password(password))
+
+        login = self.client.post(
+            reverse('api-login'),
+            {'email': email, 'password': password, 'rol': 'guardia'},
+            format='json',
+        )
+        self.assertEqual(login.status_code, 200)
+        self.assertEqual(login.data['user']['role_code'], 'guardia')
+
+    def test_frontend_singular_endpoint_accepts_request_without_trailing_slash(self):
+        response = self.client.post(
+            '/api/guardia',
+            {
+                'nombre': 'Nora',
+                'email': 'nora.singular@example.com',
+                'password': 'password-guardia-123',
+            },
+            format='json',
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['email'], 'nora.singular@example.com')
+
+    def test_guardia_can_be_updated_deactivated_and_reactivated(self):
+        create_response = self.client.post(
+            reverse('guardias-list'),
+            {
+                'nombre': 'Nora',
+                'email': 'nora@example.com',
+                'password': 'password-guardia-123',
+            },
+            format='json',
+        )
+        guardia_id = create_response.data['id']
+        guardia = Guardia.objects.get(pk=guardia_id)
+        user = guardia.account.user
+        updated_email = 'nora.actualizada@example.com'
+        updated_password = 'password-nuevo-123'
+
+        update_response = self.client.patch(
+            reverse('guardias-detail', args=[guardia_id]),
+            {
+                'nombre': 'Nora Actualizada',
+                'email': updated_email,
+                'password': updated_password,
+            },
+            format='json',
+        )
+        self.assertEqual(update_response.status_code, 200)
+        user.refresh_from_db()
+        self.assertEqual(user.first_name, 'Nora Actualizada')
+        self.assertEqual(user.email, updated_email)
+        self.assertTrue(user.check_password(updated_password))
+
+        delete_response = self.client.delete(
+            reverse('guardias-detail', args=[guardia_id])
+        )
+        self.assertEqual(delete_response.status_code, 204)
+        guardia.refresh_from_db()
+        user.refresh_from_db()
+        self.assertFalse(guardia.is_active)
+        self.assertFalse(guardia.account.is_active)
+        self.assertFalse(user.is_active)
+
+        reactivate_response = self.client.put(
+            reverse('guardias-reactivate', args=[guardia_id])
+        )
+        self.assertEqual(reactivate_response.status_code, 204)
+        guardia.refresh_from_db()
+        user.refresh_from_db()
+        self.assertTrue(guardia.is_active)
+        self.assertTrue(guardia.account.is_active)
+        self.assertTrue(user.is_active)
+
+    def test_guardia_creation_requires_admin_and_unique_email(self):
+        self.client.force_authenticate(user=None)
+        payload = {
+            'nombre': 'Nora',
+            'email': 'guardia@example.com',
+            'password': 'password-guardia-123',
+        }
+        response = self.client.post(
+            reverse('guardias-list'), payload, format='json'
+        )
+        self.assertEqual(response.status_code, 401)
+
+        self.client.force_authenticate(user=self.admin)
+        User.objects.create_user(
+            username='existing-guardia',
+            email=payload['email'],
+            password=payload['password'],
+        )
+        response = self.client.post(
+            reverse('guardias-list'), payload, format='json'
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('email', response.data)

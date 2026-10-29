@@ -60,6 +60,15 @@ definí `ZENTRY_RESIDENT_EMAIL` y `ZENTRY_RESIDENT_PASSWORD` en el `.env` local 
 ejecutá `python manage.py configurar_acceso_residente`. El comando vincula el
 residente existente sin duplicar su perfil.
 
+La administración puede gestionar guardias en `/api/guardias/` o
+`/api/guardia/` (GET, POST,
+PATCH/PUT y DELETE). Para crear uno, enviá `nombre`, `email` y `password`;
+la contraseña debe tener al menos 8 caracteres y nunca se devuelve en las
+respuestas. Cada alta crea también una cuenta con rol `guardia`, que puede
+iniciar sesión en `/api/auth/login/` indicando `rol: "guardia"`. La baja es
+lógica y puede revertirse con `PUT /api/guardias/{id}/reactivate/`.
+También se acepta `POST /api/guardia` sin barra final.
+
 ### Invitaciones
 
 Se encarga de las invitaciones y accesos del barrio. Las diferentes formas de ingreso van a ser: Invitacion Unica (se vence una vez que se recepciona), Invitacion Recurrente (se vence al momento que se da de baja), Autorizacion de Proveedor (se autoriza a un proveedor a entrar a determinadas horas del dia). Ambas invitaciones van a estar constituidas en el modelo Invitación.

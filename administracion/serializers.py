@@ -159,3 +159,73 @@ class SocioSerializer(serializers.ModelSerializer):
             socio.account.save(update_fields=['is_active'])
         user.save()
         return socio
+
+
+class GuardiaSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True, required=False, min_length=8)
+
+    class Meta:
+        model = Guardia
+        fields = ['id', 'nombre', 'email', 'password', 'is_active']
+        read_only_fields = ['is_active']
+
+    def validate_email(self, value):
+        users = User.objects.filter(email__iexact=value)
+        if self.instance and self.instance.account_id:
+            users = users.exclude(pk=self.instance.account.user_id)
+        if users.exists():
+            raise serializers.ValidationError(
+                'Ya existe una cuenta con este correo electrónico.'
+            )
+        return value
+
+    def validate(self, attrs):
+        attrs = super().validate(attrs)
+        if self.instance is None and not attrs.get('password'):
+            raise serializers.ValidationError({
+                'password': 'La contraseña inicial es obligatoria.'
+            })
+        if self.instance and not self.instance.account_id and not attrs.get('password'):
+            raise serializers.ValidationError({
+                'password': 'Definí una contraseña para habilitar el acceso de este guardia.'
+            })
+        return attrs
+
+    @transaction.atomic
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        validated_data.setdefault('dni', '')
+        email = validated_data['email']
+        user = User(
+            username=f'guardia_{secrets.token_hex(16)}',
+            email=email,
+            first_name=validated_data.get('nombre', ''),
+        )
+        user.set_password(password)
+        user.save()
+        validated_data['account'] = Account.objects.create(user=user, role='guardia')
+        return super().create(validated_data)
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        guardia = super().update(instance, validated_data)
+
+        if guardia.account_id:
+            user = guardia.account.user
+        else:
+            user = User(
+                username=f'guardia_{secrets.token_hex(16)}',
+                email=guardia.email,
+            )
+            user.save()
+            guardia.account = Account.objects.create(user=user, role='guardia')
+            guardia.save(update_fields=['account'])
+
+        user.email = guardia.email
+        user.first_name = guardia.nombre
+        if password:
+            user.set_password(password)
+        user.save()
+        return guardia
