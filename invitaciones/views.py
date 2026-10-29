@@ -148,18 +148,18 @@ class InvitacionViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Debe enviar una lista de DNIs.'}, status=status.HTTP_400_BAD_REQUEST)
 
         ahora = timezone.now()
-        registros = []
-        for dni in dnis:
-            dni_str = str(dni).strip()
-            reg = RegistroAcceso.objects.create(
-                dni=dni_str,
+        registros = [
+            RegistroAcceso(
+                dni=str(dni).strip(),
                 tipo_movimiento='egreso',
                 hora_desde=ahora.time(),
                 hora_hasta=ahora.time(),
                 valido_desde=ahora,
                 valido_hasta=ahora,
             )
-            registros.append(reg.id)
+            for dni in dnis
+        ]
+        RegistroAcceso.objects.bulk_create(registros)
 
         return Response({
             'status': 'ok',

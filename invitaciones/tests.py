@@ -1,4 +1,6 @@
 from datetime import timedelta
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 from django.test import TestCase
 from django.urls import reverse
@@ -6,7 +8,7 @@ from django.utils import timezone
 from rest_framework.test import APIClient
 
 from administracion.models import Lote, PuntoAcceso, Socio
-from .models import Invitacion, Invitado, InvitacionHistorico
+from .models import Invitacion, Invitado, InvitacionHistorico, RegistroAcceso
 from .qr import crear_token_qr, obtener_id_invitacion
 
 
@@ -153,3 +155,26 @@ class InvitacionQRTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 400)
+
+    def test_registrar_egreso_inserta_varios_dnis_en_una_consulta(self):
+        dnis = [f'401010{numero:02d}' for numero in range(25)]
+
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.post(
+                reverse('invitaciones-registrar-egreso'),
+                {'dnis': dnis},
+                format='json',
+            )
+
+        inserts = [
+            query for query in queries
+            if query['sql'].lstrip().upper().startswith('INSERT')
+        ]
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data['cantidad'], len(dnis))
+        self.assertEqual(RegistroAcceso.objects.count(), len(dnis))
+        self.assertEqual(len(inserts), 1)
+        self.assertEqual(
+            list(RegistroAcceso.objects.values_list('dni', flat=True)),
+            dnis,
+        )

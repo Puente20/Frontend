@@ -1,11 +1,12 @@
+from django.utils import timezone
 from rest_framework import viewsets
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
+from administracion.models import Socio
 from .models import LugarComun, Reserva
 from .serializers import InstalacionBarrioSerializer, ReservaSerializer
-from invitaciones.models import InvitacionHistorico
+from invitaciones.models import InvitacionHistorico, Invitado, RegistroAcceso
 from base.permissions import IsAuthenticated
 
 
@@ -80,7 +81,7 @@ class ReservaViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def ultimos_movimientos_view(request):
     """
     Devuelve la lista combinada de reservas y accesos para la sección 'Últimos movimientos' de ResidentHomeComponent.
@@ -100,7 +101,35 @@ def ultimos_movimientos_view(request):
             'tipo': tipo_mov,
             'descripcion': desc,
             'ubicacion': lote_str,
+            'nombre': f'{acc.invitado.nombre} {acc.invitado.apellido}'.strip(),
             'detalle': f"DNI: {acc.invitado.dni}",
+        })
+
+    egresos = RegistroAcceso.objects.filter(
+        tipo_movimiento='egreso',
+    ).order_by('-valido_desde')[:10]
+    dnis_egresos = [egreso.dni for egreso in egresos]
+    nombres_por_dni = {
+        socio.dni: f'{socio.nombre} {socio.apellido}'.strip()
+        for socio in Socio.all_objects.filter(dni__in=dnis_egresos)
+    }
+    for invitado in Invitado.all_objects.filter(dni__in=dnis_egresos):
+        nombres_por_dni.setdefault(
+            invitado.dni,
+            f'{invitado.nombre} {invitado.apellido}'.strip(),
+        )
+
+    for egreso in egresos:
+        fecha_registro = egreso.valido_desde
+        movimientos.append({
+            'id': 20000 + egreso.id,
+            'hora': timezone.localtime(fecha_registro).strftime('%H:%M'),
+            'fechaRegistro': fecha_registro.isoformat(),
+            'tipo': 'egreso',
+            'descripcion': 'Egreso registrado',
+            'ubicacion': 'Acceso',
+            'nombre': nombres_por_dni.get(egreso.dni, 'Nombre no disponible'),
+            'detalle': f"DNI: {egreso.dni}",
         })
 
     movimientos.sort(key=lambda x: x.get('fechaRegistro', ''), reverse=True)
