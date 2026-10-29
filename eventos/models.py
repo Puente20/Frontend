@@ -2,7 +2,7 @@ from django.db import models
 
 from . import AlertaState
 
-class Alerta(models.Model):
+class BotonPanico(models.Model):
     estado = models.CharField(choices=AlertaState.CHOICES, default=AlertaState.pendiente)
     razon = models.CharField(max_length=30)
     created_at = models.DateTimeField(auto_now_add=True)

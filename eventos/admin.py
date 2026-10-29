@@ -1,5 +1,5 @@
 from django.contrib import admin
 
-from .models import Alerta
+from .models import BotonPanico
 
-admin.site.register(Alerta)
+admin.site.register(BotonPanico)

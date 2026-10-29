@@ -93,9 +93,11 @@ Se encarga de las reservas para los espacios comunes y la trazabilidad de los mi
 
 ### Eventos
 
-Se encarga de notificaciones y boton de pánico
+Se encarga del boton de pánico. Esto significa la creacion de alertas, su recepcion y ademas llevar un registro de todas las veces que se uso.
 
-**(Not implemented)**
+**Modelos:**
+
+- BotonPanico
 
 ## Documentación
 

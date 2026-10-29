@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Alerta, AlertaState
+from .models import BotonPanico, AlertaState
 from administracion.serializers import LoteSimpleSerializer, SocioSimpleSerializer
 from administracion.models import Lote, Socio
 
@@ -11,12 +11,12 @@ class AlertaValidation(serializers.ModelSerializer):
     socio = serializers.PrimaryKeyRelatedField(queryset=Socio.objects.all())
 
     class Meta:
-        model = Alerta
+        model = BotonPanico
         fields = ['estado', 'razon', 'lote', 'socio']
 
     def create(self, validated_data):
         socio = validated_data.pop('socio')
-        Alerta.objects.create(
+        BotonPanico.objects.create(
             created_by = socio,
             **validated_data
         )
@@ -29,7 +29,7 @@ class AlertaSerializer(serializers.ModelSerializer):
     socio = serializers.SerializerMethodField()
 
     class Meta:
-        model = Alerta
+        model = BotonPanico
         fields = ['id', 'estado', 'razon', 'created_at', 'lote', 'socio']
 
     def get_lote(self, obj):

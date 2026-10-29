@@ -3,14 +3,14 @@ import time
 
 from django.db import close_old_connections
 
-from .models import Alerta, AlertaState
+from .models import BotonPanico, AlertaState
 
 
 def eventos():
     yield ': ok\n\n'
     while True:
         close_old_connections()
-        alertas = Alerta.objects.filter(
+        alertas = BotonPanico.objects.filter(
             estado=AlertaState.pendiente,
         ).select_related('socio').order_by('id')
         if not alertas:

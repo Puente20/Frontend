@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status, views
 
 from base.permissions import IsGuardiaRole, IsAuthenticated, IsAdminRole
-from .models import Alerta, AlertaState
+from .models import BotonPanico, AlertaState
 from .serializers import AlertaValidation, AlertaSerializer
 from .services import eventos
 
@@ -30,6 +30,7 @@ def stream(request):
         content_type='text/event-stream',
     )
     response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'
     return response
 
 class AlertaRecepcionarView(views.APIView):
@@ -38,8 +39,8 @@ class AlertaRecepcionarView(views.APIView):
 
     def put(self, request, pk):
         try:
-            alerta = Alerta.objects.get(estado=AlertaState.enviada, pk=pk)
-        except Alerta.DoesNotExist:
+            alerta = BotonPanico.objects.get(estado=AlertaState.enviada, pk=pk)
+        except BotonPanico.DoesNotExist:
             return Response({"error": "La alerta no existe o ya se respondio"}, status=status.HTTP_404_NOT_FOUND)
         
         try:
@@ -59,6 +60,6 @@ class AlertaRecepcionarView(views.APIView):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAdminRole])
 def historico_alertas(request):
-    queryset = Alerta.objects.all().select_related('socio', 'lote')
+    queryset = BotonPanico.objects.all().select_related('socio', 'lote')
     serializer = AlertaSerializer(queryset, many=True)
     return Response(serializer.data)
