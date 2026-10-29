@@ -1,0 +1,52 @@
+<main class="historial-wrapper">
+  <header class="header">
+    <button type="button" class="btn-volver" (click)="volver()">← Volver</button>
+    <img src="/logo-zentry-negro.png" alt="Zentry" class="logo">
+  </header>
+
+  <section class="titulo">
+    <h1>Historial de ingresos y egresos</h1>
+    <p>Consultá quién ingresó y registrá su salida.</p>
+    <p class="nota-local">El historial se guarda en este navegador.</p>
+  </section>
+
+  <nav class="tabs" aria-label="Tipo de movimiento">
+    <button
+      type="button"
+      [class.active]="tipoActivo === 'ingreso'"
+      [attr.aria-pressed]="tipoActivo === 'ingreso'"
+      (click)="tipoActivo = 'ingreso'">
+      Ingresos
+    </button>
+    <button
+      type="button"
+      [class.active]="tipoActivo === 'egreso'"
+      [attr.aria-pressed]="tipoActivo === 'egreso'"
+      (click)="tipoActivo = 'egreso'">
+      Egresos
+    </button>
+  </nav>
+
+  <section class="movimientos" aria-live="polite">
+    <p class="vacio" *ngIf="movimientosFiltrados.length === 0">
+      No hay {{ tipoActivo === 'ingreso' ? 'ingresos' : 'egresos' }} registrados todavía.
+    </p>
+
+    <article class="movimiento" *ngFor="let movimiento of movimientosFiltrados">
+      <div>
+        <h2>{{ movimiento.nombre || 'Nombre no disponible' }}</h2>
+        <p>DNI: {{ movimiento.dni }}</p>
+        <time [attr.datetime]="movimiento.fechaRegistro">
+          {{ mostrarFecha(movimiento.fechaRegistro) }}
+        </time>
+      </div>
+      <button
+        *ngIf="puedeRegistrarEgreso(movimiento)"
+        type="button"
+        class="btn-egreso"
+        (click)="registrarEgreso(movimiento)">
+        Registrar egreso
+      </button>
+    </article>
+  </section>
+</main>

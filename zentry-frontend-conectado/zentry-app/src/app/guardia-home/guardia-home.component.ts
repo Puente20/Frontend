@@ -19,6 +19,10 @@ export class GuardiaHomeComponent {
     this.router.navigate(['/registrar-egreso']);
   }
 
+  irAHistorial(): void {
+    this.router.navigate(['/historial-guardia']);
+  }
+
   cerrarSesion(): void {
     this.router.navigate(['/login']);
   }

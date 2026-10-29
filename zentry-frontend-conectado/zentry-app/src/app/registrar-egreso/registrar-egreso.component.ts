@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { InvitacionService } from '../invitaciones-activas/invitacion.service';
+import { GuardiaHistorialService } from '../services/guardia-historial.service';
 
 @Component({
   selector: 'app-registrar-egreso',
@@ -11,15 +13,32 @@ import { InvitacionService } from '../invitaciones-activas/invitacion.service';
   templateUrl: './registrar-egreso.component.html',
   styleUrl: './registrar-egreso.component.css'
 })
-export class RegistrarEgresoComponent {
+export class RegistrarEgresoComponent implements OnInit {
 
   // Lista de DNI de las personas que egresan
   dnis: string[] = [''];
 
   mensajeError: string = '';
   mensajeExito: string = '';
+  guardando = false;
 
-  constructor(private router: Router, private invitacionService: InvitacionService) {}
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private invitacionService: InvitacionService,
+    private guardiaHistorial: GuardiaHistorialService
+  ) {}
+
+  ngOnInit(): void {
+    const dni = this.route.snapshot.queryParamMap.get('dni');
+    if (dni) {
+      this.dnis[0] = dni;
+    }
+  }
+
+  obtenerNombre(dni: string): string {
+    return this.guardiaHistorial.obtenerNombrePorDni(dni);
+  }
 
   // Agregar una nueva persona
   agregarPersona(): void {
@@ -48,6 +67,9 @@ export class RegistrarEgresoComponent {
 
   // Validar los DNI ingresados
   aceptarEgreso(): void {
+    if (this.guardando) {
+      return;
+    }
 
     this.limpiarMensajes();
 
@@ -74,18 +96,33 @@ export class RegistrarEgresoComponent {
       return;
     }
 
+    this.guardando = true;
     this.invitacionService.registrarEgresoEnBackend(dnisLimpios).subscribe({
       next: (res) => {
+        this.guardiaHistorial.registrarEgresos(dnisLimpios);
         this.mensajeExito = res.mensaje || `Se registraron correctamente los ${dnisLimpios.length} egresos en la base de datos.`;
+        this.guardando = false;
       },
-      error: () => {
-        this.mensajeExito =
-          'Se validaron correctamente los ' +
-          dnisLimpios.length +
-          ' DNI (registrado en modo local).';
+      error: (error: HttpErrorResponse) => {
+        this.mensajeError = this.obtenerMensajeError(error);
+        this.guardando = false;
       }
     });
 
+  }
+
+  private obtenerMensajeError(error: HttpErrorResponse): string {
+    const cuerpo: unknown = error.error;
+    if (typeof cuerpo === 'object' && cuerpo !== null) {
+      const mensajes = Object.values(cuerpo).flatMap((valor) =>
+        Array.isArray(valor) ? valor : [valor]
+      ).filter((valor): valor is string => typeof valor === 'string');
+      if (mensajes.length) {
+        return mensajes.join(' ');
+      }
+    }
+
+    return 'No se pudo registrar el egreso. Revisá el DNI y la conexión con el servidor.';
   }
 
   volver(): void {

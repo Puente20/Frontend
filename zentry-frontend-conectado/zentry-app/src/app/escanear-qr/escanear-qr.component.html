@@ -7,7 +7,12 @@
       type="button"
       class="btn-volver"
       (click)="volver()">
-      ← Volver
+      <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M25 0.5C38.531 0.5 49.5 11.469 49.5 25C49.5 38.531 38.531 49.5 25 49.5C11.469 49.5 0.5 38.531 0.5 25C0.5 11.469 11.469 0.5 25 0.5Z" fill="#2C2C2C"/>
+<path d="M25 0.5C38.531 0.5 49.5 11.469 49.5 25C49.5 38.531 38.531 49.5 25 49.5C11.469 49.5 0.5 38.531 0.5 25C0.5 11.469 11.469 0.5 25 0.5Z" stroke="#2C2C2C" stroke-linecap="round"/>
+<path d="M30.8333 25H19.1666M25 19.1667L19.1666 25L25 30.8333" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" stroke="#F5F5F5"/>
+</svg>
+
     </button>
 
     <img
@@ -33,14 +38,14 @@
     <div class="marco-qr" aria-hidden="true"></div>
   </section>
 
-  <p class="mensaje" role="status">{{ estadoEscaneo }}</p>
-  <p *ngIf="mensajeError" class="aviso" role="alert">{{ mensajeError }}</p>
+  <p class="mensaje" role="status">{{ estadoEscaneo() }}</p>
+  <p *ngIf="mensajeError()" class="aviso" role="alert">{{ mensajeError() }}</p>
   <button
-    *ngIf="detectorDisponible && !escaneando && !validacionEnCurso"
+    *ngIf="!escaneando() && !validacionEnCurso()"
     type="button"
     class="btn-reintentar"
-    (click)="reintentarEscaneo()">
-    Escanear otro QR
+    (click)="activarCamara()">
+    {{ camaraIntentada() ? 'Reintentar escaneo' : 'Activar cámara' }}
   </button>
 
 </main>

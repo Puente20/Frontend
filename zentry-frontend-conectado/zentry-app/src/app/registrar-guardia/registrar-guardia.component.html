@@ -78,8 +78,9 @@
       </button>
       <button
         type="submit"
-        class="btn-dar-alta">
-        Dar alta
+        class="btn-dar-alta"
+        [disabled]="guardando">
+        {{ guardando ? 'Guardando...' : 'Dar alta' }}
       </button>
     </div>
   </form>

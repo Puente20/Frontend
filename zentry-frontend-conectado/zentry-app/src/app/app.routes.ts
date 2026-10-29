@@ -20,6 +20,7 @@ import { InvitacionesActivasComponent } from './invitaciones-activas/invitacione
 import { PestanaEgresosComponent } from './pestana-egresos/pestana-egresos.component';
 import { RegistrarGuardiaComponent } from './registrar-guardia/registrar-guardia.component';
 import { AltaAdministradorComponent } from './alta-administrador/alta-administrador.component';
+import { HistorialGuardiaComponent } from './historial-guardia/historial-guardia.component';
 
 export const routes: Routes = [
   { path: 'pestana-egresos', component: PestanaEgresosComponent },
@@ -45,6 +46,7 @@ export const routes: Routes = [
   { path: 'reservas', redirectTo: 'nueva-reserva', pathMatch: 'full' },
   { path: 'guardia-home', component: GuardiaHomeComponent },
   { path: 'escanear-qr', component: EscanearQrComponent },
+  { path: 'historial-guardia', component: HistorialGuardiaComponent },
   { path: 'registrar-egreso', component: RegistrarEgresoComponent },
   { path: '**', redirectTo: 'login' }
 ];
