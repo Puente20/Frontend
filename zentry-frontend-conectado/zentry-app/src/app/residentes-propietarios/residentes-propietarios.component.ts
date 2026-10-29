@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -44,7 +44,11 @@ export class ResidentesPropietariosComponent implements OnInit {
 
   propietarios: ResidentePropietario[] = [];
 
-  constructor(private router: Router, private residentesService: ResidentesService) {}
+  constructor(
+    private router: Router,
+    private residentesService: ResidentesService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarPropietarios();
@@ -58,11 +62,13 @@ export class ResidentesPropietariosComponent implements OnInit {
           ? datos.map((d) => ({ ...d, tipo: 'propietario' as const }))
           : this.propietariosMock;
         this.cargando = false;
+          this.cdr.markForCheck();
       },
       error: (err) => {
         console.warn('Usando propietarios mock por falta de conexión al backend:', err);
         this.propietarios = this.propietariosMock;
         this.cargando = false;
+        this.cdr.markForCheck();
       }
     });
   }

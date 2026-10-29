@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TimeoutError, finalize, timeout } from 'rxjs';
 import { InvitacionService } from '../invitaciones-activas/invitacion.service';
-import { GuardiaHistorialService } from '../services/guardia-historial.service';
+import {
+  GuardiaHistorialService,
+  MovimientoGuardia
+} from '../services/guardia-historial.service';
 
 @Component({
   selector: 'app-registrar-egreso',
@@ -21,12 +25,14 @@ export class RegistrarEgresoComponent implements OnInit {
   mensajeError: string = '';
   mensajeExito: string = '';
   guardando = false;
+  private movimientos: MovimientoGuardia[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private invitacionService: InvitacionService,
-    private guardiaHistorial: GuardiaHistorialService
+    private guardiaHistorial: GuardiaHistorialService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -34,10 +40,22 @@ export class RegistrarEgresoComponent implements OnInit {
     if (dni) {
       this.dnis[0] = dni;
     }
+    this.guardiaHistorial.getMovimientos().subscribe({
+      next: (movimientos) => {
+        this.movimientos = movimientos;
+        this.cdr.markForCheck();
+      },
+      error: (error: unknown) => {
+        console.error('No se pudo consultar el historial para completar nombres por DNI:', error);
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   obtenerNombre(dni: string): string {
-    return this.guardiaHistorial.obtenerNombrePorDni(dni);
+    return this.movimientos.find((movimiento) =>
+      movimiento.dni === dni.trim() && movimiento.nombre
+    )?.nombre ?? '';
   }
 
   // Agregar una nueva persona
@@ -97,21 +115,40 @@ export class RegistrarEgresoComponent implements OnInit {
     }
 
     this.guardando = true;
-    this.invitacionService.registrarEgresoEnBackend(dnisLimpios).subscribe({
+    this.invitacionService.registrarEgresoEnBackend(dnisLimpios).pipe(
+      timeout({ first: 15000 }),
+      finalize(() => {
+        this.guardando = false;
+        this.cdr.markForCheck();
+      })
+    ).subscribe({
       next: (res) => {
-        this.guardiaHistorial.registrarEgresos(dnisLimpios);
         this.mensajeExito = res.mensaje || `Se registraron correctamente los ${dnisLimpios.length} egresos en la base de datos.`;
-        this.guardando = false;
+        this.cdr.markForCheck();
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: unknown) => {
+        if (error instanceof TimeoutError) {
+          this.mensajeError = 'El servidor no respondió en 15 segundos. El egreso pudo haberse guardado; revisá el historial antes de volver a intentarlo.';
+          this.cdr.markForCheck();
+          return;
+        }
+
         this.mensajeError = this.obtenerMensajeError(error);
-        this.guardando = false;
+        this.cdr.markForCheck();
       }
     });
 
   }
 
-  private obtenerMensajeError(error: HttpErrorResponse): string {
+  private obtenerMensajeError(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return 'No se pudo confirmar el egreso. Revisá el historial antes de volver a intentarlo.';
+    }
+
+    if (error.status === 200) {
+      return 'El servidor respondió, pero no se pudo interpretar su confirmación. Revisá el historial antes de volver a intentarlo.';
+    }
+
     const cuerpo: unknown = error.error;
     if (typeof cuerpo === 'object' && cuerpo !== null) {
       const mensajes = Object.values(cuerpo).flatMap((valor) =>
@@ -122,7 +159,7 @@ export class RegistrarEgresoComponent implements OnInit {
       }
     }
 
-    return 'No se pudo registrar el egreso. Revisá el DNI y la conexión con el servidor.';
+    return 'No se pudo confirmar el egreso. Revisá el historial y la conexión antes de volver a intentarlo.';
   }
 
   volver(): void {

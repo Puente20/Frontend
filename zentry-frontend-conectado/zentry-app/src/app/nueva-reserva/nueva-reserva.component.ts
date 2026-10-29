@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -92,7 +92,8 @@ export class NuevaReservaComponent implements OnInit {
   constructor(
     private router: Router,
     private reservasService: ReservasService,
-    private activityLog: ActivityLogService
+    private activityLog: ActivityLogService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -109,10 +110,12 @@ export class NuevaReservaComponent implements OnInit {
         if (instalaciones && instalaciones.length > 0) {
           this.instalacionesDisponibles = instalaciones;
           this.seleccionarInstalacion(this.instalacionesDisponibles[0]);
+          this.cdr.markForCheck();
         }
       },
       error: (err) => {
         console.warn('Usando instalaciones locales por defecto:', err);
+        this.cdr.markForCheck();
       }
     });
 
@@ -335,12 +338,14 @@ export class NuevaReservaComponent implements OnInit {
             ? `Fecha: ${fechaFormateada}`
             : `Fecha: ${fechaFormateada} (${this.horarioSeleccionado})`
         });
+        this.cdr.markForCheck();
         void this.router.navigate(['/resident-home']);
       },
       error: (err) => {
         console.error('No se pudo registrar la reserva en el backend:', err);
         this.procesandoReserva = false;
         this.mensajeErrorReserva = 'No se pudo confirmar la reserva. Revisá la conexión e intentá nuevamente.';
+        this.cdr.markForCheck();
       }
     });
   }

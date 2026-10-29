@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -25,7 +25,11 @@ export class GenerateQrComponent {
   mensajeError = '';
   generando = false;
 
-  constructor(private router: Router, private invitacionService: InvitacionService) {}
+  constructor(
+    private router: Router,
+    private invitacionService: InvitacionService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   seleccionarTipo(tipo: 'unica' | 'concurrente'): void {
     if (tipo === 'concurrente') {
@@ -73,6 +77,7 @@ export class GenerateQrComponent {
         console.error('No se pudo crear la invitación en el backend:', error);
         this.generando = false;
         this.mensajeError = 'No se pudo crear la invitación. Verificá la conexión con el servidor e intentá nuevamente.';
+        this.cdr.markForCheck();
       }
     });
   }

@@ -196,6 +196,17 @@
   line-height: 1.5;
 }
 
+.btn-reintentar {
+  margin-top: 12px;
+  padding: 9px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #2c2c2c;
+  color: #f7f4ef;
+  font: inherit;
+  cursor: pointer;
+}
+
 .ingresos-list,
 .egresos-list {
   display: flex;

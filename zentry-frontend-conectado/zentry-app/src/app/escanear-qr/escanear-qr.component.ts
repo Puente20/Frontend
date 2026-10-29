@@ -2,8 +2,6 @@ import { Component, ElementRef, NgZone, OnDestroy, ViewChild, signal } from '@an
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { InvitacionService } from '../invitaciones-activas/invitacion.service';
-import { ActivityLogService } from '../services/activity-log.service';
-import { GuardiaHistorialService } from '../services/guardia-historial.service';
 import type { IScannerControls } from '@zxing/browser';
 
 @Component({
@@ -29,9 +27,7 @@ export class EscanearQrComponent implements OnDestroy {
   constructor(
     private router: Router,
     private ngZone: NgZone,
-    private invitacionService: InvitacionService,
-    private activityLog: ActivityLogService,
-    private guardiaHistorial: GuardiaHistorialService
+    private invitacionService: InvitacionService
   ) {}
 
   ngOnDestroy(): void {
@@ -186,13 +182,6 @@ export class EscanearQrComponent implements OnDestroy {
 
     this.invitacionService.validarQrEnBackend(token).subscribe({
       next: (invitacion) => {
-        this.guardiaHistorial.registrarIngreso(invitacion.nombreVisitante, invitacion.dni);
-        this.activityLog.registrar({
-          tipo: 'visitante-aprobado',
-          descripcion: `Visitante autorizado: ${invitacion.nombreVisitante}`,
-          ubicacion: 'Ingreso principal',
-          detalle: `DNI: ${invitacion.dni}. Acceso autorizado mediante QR`
-        });
         this.estadoEscaneo.set('Ingreso autorizado.');
         this.validacionEnCurso.set(false);
       },

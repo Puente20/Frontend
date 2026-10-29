@@ -19,6 +19,7 @@
     <p class="panel-subtitle">
       Fecha, {{ fechaActual }} - <em>{{ nombreBarrio }}</em>
     </p>
+    <p class="panel-subtitle">Historial sincronizado con el servidor. Solo lectura.</p>
   </section>
 
   <section class="eleccion-tipo">
@@ -42,13 +43,17 @@
     <div class="empty-state" *ngIf="cargando">
       <p>Cargando...</p>
     </div>
-    <div class="empty-state" *ngIf="!cargando && tipoEntrada === 'ingreso' && ingresosFiltrados.length === 0">
+    <div class="empty-state" *ngIf="!cargando && mensajeError">
+      <p>{{ mensajeError }}</p>
+      <button type="button" class="btn-reintentar" (click)="cargarMovimientos()">Reintentar</button>
+    </div>
+    <div class="empty-state" *ngIf="!cargando && !mensajeError && tipoEntrada === 'ingreso' && ingresosFiltrados.length === 0">
       <p>No hay ingresos registrados</p>
     </div>
-    <div class="empty-state" *ngIf="!cargando && tipoEntrada === 'egreso' && egresosFiltrados.length === 0">
+    <div class="empty-state" *ngIf="!cargando && !mensajeError && tipoEntrada === 'egreso' && egresosFiltrados.length === 0">
       <p>No hay egresos registrados</p>
     </div>
-    <div class="ingresos-list" *ngIf="!cargando && tipoEntrada === 'ingreso' && ingresosFiltrados.length > 0">
+    <div class="ingresos-list" *ngIf="!cargando && !mensajeError && tipoEntrada === 'ingreso' && ingresosFiltrados.length > 0">
       <article class="ingreso-carta"
         *ngFor="let ingreso of ingresosFiltrados; trackBy: trackByIngresoId">
         <div class="ingreso-carta-header">
@@ -61,13 +66,13 @@
           </div>
           <div class="ingreso-carta-right">
             <h3 class="ingreso-info">{{ ingreso.nombre }}</h3>
-            <p class="dni-visita">DNI: {{ ingreso.dni }} · {{ ingreso.horario }}</p>
+            <p class="dni-visita">DNI: {{ ingreso.dni }} · {{ mostrarFecha(ingreso.fechaRegistro) }}</p>
           </div>
         </div>
       </article>
     </div>
 
-    <div class="egresos-list" *ngIf="!cargando && tipoEntrada === 'egreso' && egresosFiltrados.length > 0">
+    <div class="egresos-list" *ngIf="!cargando && !mensajeError && tipoEntrada === 'egreso' && egresosFiltrados.length > 0">
       <article class="egreso-carta"
         *ngFor="let egreso of egresosFiltrados; trackBy: trackByEgresoId">
         <div class="egreso-carta-header">
@@ -79,7 +84,7 @@
           </div>
           <div class="egreso-carta-right">
             <h3 class="egreso-info">{{ egreso.nombre }}</h3>
-            <p class="dni-visita">DNI: {{ egreso.dni }} · {{ egreso.horario }}</p>
+            <p class="dni-visita">DNI: {{ egreso.dni }} · {{ mostrarFecha(egreso.fechaRegistro) }}</p>
           </div>
         </div>
       </article>

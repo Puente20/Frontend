@@ -1,4 +1,4 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ReservasService } from '../services/reservas.service';
@@ -18,7 +18,11 @@ export class PanicButtonComponent {
   enviando = false;
   mensajeError = '';
 
-  constructor(private router: Router, private reservasService: ReservasService) {}
+  constructor(
+    private router: Router,
+    private reservasService: ReservasService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onRechazar(): void {
     if (this.enviando) { return; }
@@ -36,6 +40,7 @@ export class PanicButtonComponent {
     this.reservasService.enviarAlertaPanico().subscribe({
       next: () => {
         this.enviando = false;
+        this.cdr.markForCheck();
         this.confirmar.emit();
         if (this.router.url.includes('panic-button')) {
           void this.router.navigate(['/resident-home']);
@@ -45,6 +50,7 @@ export class PanicButtonComponent {
         this.enviando = false;
         this.mensajeError = err.error?.detail ||
           'No se pudo enviar la emergencia. Intentá nuevamente o contactá a Seguridad por otro medio.';
+        this.cdr.markForCheck();
       }
     });
   }

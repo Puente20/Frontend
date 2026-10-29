@@ -7,8 +7,12 @@
   <section class="titulo">
     <h1>Historial de ingresos y egresos</h1>
     <p>Consultá quién ingresó y registrá su salida.</p>
-    <p class="nota-local">El historial se guarda en este navegador.</p>
+    <p class="nota-local">Historial sincronizado con el servidor.</p>
   </section>
+
+  <button type="button" class="btn-actualizar" (click)="cargarMovimientos()" [disabled]="cargando">
+    {{ cargando ? 'Actualizando…' : 'Actualizar historial' }}
+  </button>
 
   <nav class="tabs" aria-label="Tipo de movimiento">
     <button
@@ -28,11 +32,16 @@
   </nav>
 
   <section class="movimientos" aria-live="polite">
-    <p class="vacio" *ngIf="movimientosFiltrados.length === 0">
+    <p class="vacio" *ngIf="cargando">Cargando historial…</p>
+    <div class="vacio" *ngIf="!cargando && mensajeError">
+      <p>{{ mensajeError }}</p>
+      <button type="button" class="btn-reintentar" (click)="cargarMovimientos()">Reintentar</button>
+    </div>
+    <p class="vacio" *ngIf="!cargando && !mensajeError && movimientosFiltrados.length === 0">
       No hay {{ tipoActivo === 'ingreso' ? 'ingresos' : 'egresos' }} registrados todavía.
     </p>
 
-    <article class="movimiento" *ngFor="let movimiento of movimientosFiltrados">
+    <article class="movimiento" *ngFor="let movimiento of movimientosFiltrados" [hidden]="cargando || mensajeError">
       <div>
         <h2>{{ movimiento.nombre || 'Nombre no disponible' }}</h2>
         <p>DNI: {{ movimiento.dni }}</p>

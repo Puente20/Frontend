@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -24,9 +24,9 @@ export class RegistrarGuardiaComponent {
     contra: ''
   };
 
-  mensajeFormulario = '';
-  tipoMensaje: 'error' | 'info' | '' = '';
-  guardando = false;
+  readonly mensajeFormulario = signal('');
+  readonly tipoMensaje = signal<'error' | 'info' | ''>('');
+  readonly guardando = signal(false);
 
   constructor(
     private router: Router,
@@ -38,7 +38,7 @@ export class RegistrarGuardiaComponent {
   }
 
   darAlta(): void {
-    if (this.guardando) {
+    if (this.guardando()) {
       return;
     }
 
@@ -61,9 +61,9 @@ export class RegistrarGuardiaComponent {
       return;
     }
 
-    this.guardando = true;
-    this.mensajeFormulario = '';
-    this.tipoMensaje = '';
+    this.guardando.set(true);
+    this.mensajeFormulario.set('');
+    this.tipoMensaje.set('');
 
     this.guardiasService.crearGuardia({
       nombre,
@@ -71,23 +71,27 @@ export class RegistrarGuardiaComponent {
       password: contra
     }).pipe(
       finalize(() => {
-        this.guardando = false;
+        this.guardando.set(false);
       })
     ).subscribe({
       next: () => {
         this.guardia = { nombre: '', mail: '', contra: '' };
         this.mostrarMensaje('Guardia registrado correctamente.', 'info');
       },
-      error: (error: HttpErrorResponse) => {
+      error: (error: unknown) => {
         const mensaje = error instanceof TimeoutError
-          ? 'El servidor no respondió en 15 segundos. Revisá que el backend esté funcionando e intentá de nuevo.'
+          ? 'El servidor no confirmó el alta en 15 segundos. Verificá si el guardia se creó antes de volver a intentarlo.'
           : this.obtenerMensajeError(error);
         this.mostrarMensaje(mensaje, 'error');
       }
     });
   }
 
-  private obtenerMensajeError(error: HttpErrorResponse): string {
+  private obtenerMensajeError(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return 'No se pudo confirmar el alta del guardia. Verificá si se creó antes de volver a intentarlo.';
+    }
+
     const cuerpo: unknown = error.error;
 
     if (typeof cuerpo === 'string') {
@@ -108,7 +112,7 @@ export class RegistrarGuardiaComponent {
   }
 
   private mostrarMensaje(mensaje: string, tipo: 'error' | 'info'): void {
-    this.mensajeFormulario = mensaje;
-    this.tipoMensaje = tipo;
+    this.mensajeFormulario.set(mensaje);
+    this.tipoMensaje.set(tipo);
   }
 }

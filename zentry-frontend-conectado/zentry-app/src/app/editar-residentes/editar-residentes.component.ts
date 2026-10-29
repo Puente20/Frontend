@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ResidentesService } from '../services/residentes.service';
@@ -46,7 +46,11 @@ export class EditarResidentesComponent implements OnInit {
 
   residentes: Residente[] = [];
 
-  constructor(private router: Router, private residentesService: ResidentesService) {}
+  constructor(
+    private router: Router,
+    private residentesService: ResidentesService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarResidentes();
@@ -59,12 +63,14 @@ export class EditarResidentesComponent implements OnInit {
       next: (remotos) => {
         this.residentes = remotos as Residente[];
         this.cargando = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('No se pudieron cargar los residentes:', error);
         this.residentes = [];
         this.errorCarga = 'No se pudieron cargar los residentes. Revisá la conexión e intentá nuevamente.';
         this.cargando = false;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -233,11 +239,13 @@ export class EditarResidentesComponent implements OnInit {
         }
         this.residentes = residentesActualizados;
         this.cerrarEdicion();
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.errorEdicion = err.error?.password?.[0]
           || err.error?.email?.[0]
           || 'No se pudieron guardar los cambios. Intentá nuevamente.';
+        this.cdr.markForCheck();
       }
     });
   }

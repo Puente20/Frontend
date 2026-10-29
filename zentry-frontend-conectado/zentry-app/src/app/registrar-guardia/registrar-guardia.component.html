@@ -60,13 +60,13 @@
     </div>
 
     <p
-      *ngIf="mensajeFormulario"
+      *ngIf="mensajeFormulario()"
       class="form-message"
-      [class.form-message-error]="tipoMensaje === 'error'"
-      [class.form-message-info]="tipoMensaje === 'info'"
+      [class.form-message-error]="tipoMensaje() === 'error'"
+      [class.form-message-info]="tipoMensaje() === 'info'"
       role="status"
       aria-live="polite">
-      {{ mensajeFormulario }}
+      {{ mensajeFormulario() }}
     </p>
 
     <div class="form-actions">
@@ -79,8 +79,8 @@
       <button
         type="submit"
         class="btn-dar-alta"
-        [disabled]="guardando">
-        {{ guardando ? 'Guardando...' : 'Dar alta' }}
+        [disabled]="guardando()">
+        {{ guardando() ? 'Guardando...' : 'Dar alta' }}
       </button>
     </div>
   </form>

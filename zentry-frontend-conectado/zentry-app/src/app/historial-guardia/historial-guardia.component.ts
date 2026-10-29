@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
@@ -17,14 +17,35 @@ import {
 export class HistorialGuardiaComponent implements OnInit {
   tipoActivo: TipoMovimientoGuardia = 'ingreso';
   movimientos: MovimientoGuardia[] = [];
+  cargando = false;
+  mensajeError = '';
 
   constructor(
     private router: Router,
-    private historialService: GuardiaHistorialService
+    private historialService: GuardiaHistorialService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.movimientos = this.historialService.listar();
+    this.cargarMovimientos();
+  }
+
+  cargarMovimientos(): void {
+    this.cargando = true;
+    this.mensajeError = '';
+    this.historialService.getMovimientos().subscribe({
+      next: (movimientos) => {
+        this.movimientos = movimientos;
+        this.cargando = false;
+        this.cdr.markForCheck();
+      },
+      error: (error: unknown) => {
+        console.error('No se pudo cargar el historial del guardia:', error);
+        this.mensajeError = 'No se pudo cargar el historial. Revisá la conexión con el servidor e intentá nuevamente.';
+        this.cargando = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   get movimientosFiltrados(): MovimientoGuardia[] {

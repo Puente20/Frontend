@@ -55,6 +55,26 @@
   font-size: 12px;
 }
 
+.btn-actualizar,
+.btn-reintentar {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #2B2B29;
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.btn-actualizar {
+  margin-bottom: 16px;
+}
+
+.btn-actualizar:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .tabs {
   display: flex;
   gap: 8px;

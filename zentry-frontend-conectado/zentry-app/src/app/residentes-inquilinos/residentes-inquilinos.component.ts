@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -128,7 +128,11 @@ export class ResidentesInquilinosComponent implements OnInit {
   /** Lista completa de inquilinos cargados */
   inquilinos: ResidenteInquilino[] = [];
 
-  constructor(private router: Router, private residentesService: ResidentesService) {}
+  constructor(
+    private router: Router,
+    private residentesService: ResidentesService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.cargarInquilinos();
@@ -161,12 +165,14 @@ export class ResidentesInquilinosComponent implements OnInit {
           ? datos.map((d) => ({ ...d, tipo: 'inquilino' as const }))
           : [...this.inquilinosMock, ...extras];
         this.cargando = false;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.warn('Error al obtener inquilinos del backend, usando datos locales:', err);
         const extras = this.obtenerInquilinosLocales();
         this.inquilinos = [...this.inquilinosMock, ...extras];
         this.cargando = false;
+        this.cdr.markForCheck();
       }
     });
   }

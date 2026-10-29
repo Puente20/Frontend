@@ -1,100 +1,124 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable, map } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export type TipoMovimientoGuardia = 'ingreso' | 'egreso';
 
 export interface MovimientoGuardia {
-  id: number;
+  id: number | string;
   tipo: TipoMovimientoGuardia;
   nombre: string;
   dni: string;
   fechaRegistro: string;
 }
 
-const HISTORIAL_GUARDIA_STORAGE_KEY = 'zentry_historial_guardia';
-
 @Injectable({ providedIn: 'root' })
 export class GuardiaHistorialService {
-  listar(): MovimientoGuardia[] {
-    if (typeof window === 'undefined') {
-      return [];
+  private readonly apiUrl = `${environment.apiUrl}/movimientos/`;
+
+  constructor(private http: HttpClient) {}
+
+  getMovimientos(): Observable<MovimientoGuardia[]> {
+    return this.http.get<unknown>(this.apiUrl).pipe(
+      map((respuesta) => this.normalizarMovimientos(respuesta))
+    );
+  }
+
+  private normalizarMovimientos(respuesta: unknown): MovimientoGuardia[] {
+    const registros = this.obtenerRegistros(respuesta);
+    if (!registros) {
+      throw new Error('El endpoint de movimientos no devolvió una lista.');
     }
 
-    try {
-      const guardado = window.localStorage.getItem(HISTORIAL_GUARDIA_STORAGE_KEY);
-      if (!guardado) {
+    const movimientos = registros.flatMap((valor: unknown, index: number): MovimientoGuardia[] => {
+      if (typeof valor !== 'object' || valor === null) {
         return [];
       }
 
-      const movimientos: unknown = JSON.parse(guardado);
-      if (!Array.isArray(movimientos)) {
-        throw new Error('El historial guardado no tiene el formato esperado.');
+      const registro = valor as Record<string, unknown>;
+      const tipo = registro['tipo'] ?? registro['tipo_movimiento'];
+      if (tipo !== 'ingreso' && tipo !== 'visitante-aprobado' && tipo !== 'egreso') {
+        return [];
       }
 
-      return movimientos.filter((movimiento: unknown): movimiento is MovimientoGuardia => {
-        if (typeof movimiento !== 'object' || movimiento === null) {
-          return false;
-        }
+      const fechaRegistro = registro['fechaRegistro'] ?? registro['fecha_registro'];
+      if (typeof fechaRegistro !== 'string' || Number.isNaN(Date.parse(fechaRegistro))) {
+        throw new Error(`El movimiento ${index + 1} no contiene una fecha válida.`);
+      }
 
-        const registro = movimiento as Record<string, unknown>;
-        return typeof registro['id'] === 'number'
-          && (registro['tipo'] === 'ingreso' || registro['tipo'] === 'egreso')
-          && typeof registro['nombre'] === 'string'
-          && typeof registro['dni'] === 'string'
-          && typeof registro['fechaRegistro'] === 'string'
-          && !Number.isNaN(Date.parse(registro['fechaRegistro']));
-      }).sort((a, b) => Date.parse(b.fechaRegistro) - Date.parse(a.fechaRegistro));
-    } catch (error: unknown) {
-      console.error('No se pudo leer el historial de ingresos y egresos:', error);
-      return [];
+      const descripcion = typeof registro['descripcion'] === 'string'
+        ? registro['descripcion']
+        : '';
+      const detalle = typeof registro['detalle'] === 'string' ? registro['detalle'] : '';
+      const dniCampo = registro['dni'] ?? registro['documento'];
+      const dni = typeof dniCampo === 'string'
+        ? dniCampo
+        : detalle.match(/\bDNI\s*:?\s*(\d{7,8})\b/i)?.[1]
+          ?? descripcion.match(/\bDNI\s*:?\s*(\d{7,8})\b/i)?.[1]
+          ?? '';
+      const nombreCampo = registro['nombre']
+        ?? registro['nombreVisitante']
+        ?? registro['nombre_visitante']
+        ?? registro['nombre_completo']
+        ?? registro['persona'];
+      const nombreNormalizado = typeof nombreCampo === 'string' ? nombreCampo.trim() : '';
+      const nombre = nombreNormalizado && nombreNormalizado.toLowerCase() !== 'nombre no disponible'
+        ? nombreNormalizado
+        : this.extraerNombre(detalle)
+          ?? this.extraerNombre(descripcion)
+          ?? '';
+      const id = typeof registro['id'] === 'number' || typeof registro['id'] === 'string'
+        ? registro['id']
+        : `${tipo}-${fechaRegistro}-${index}`;
+
+      return [{
+        id,
+        tipo: tipo === 'egreso' ? 'egreso' : 'ingreso',
+        nombre,
+        dni,
+        fechaRegistro
+      }];
+    }).sort((a, b) => Date.parse(b.fechaRegistro) - Date.parse(a.fechaRegistro));
+
+    return movimientos.map((movimiento) => {
+      if (movimiento.nombre) {
+        return movimiento;
+      }
+
+      const ingresoRelacionado = movimientos.find((otro) =>
+        movimiento.tipo === 'egreso'
+        && movimiento.dni.length > 0
+        && otro.tipo === 'ingreso'
+        && otro.dni === movimiento.dni
+        && otro.nombre
+      );
+
+      return ingresoRelacionado
+        ? { ...movimiento, nombre: ingresoRelacionado.nombre }
+        : { ...movimiento, nombre: 'Nombre no disponible' };
+    });
+  }
+
+  private obtenerRegistros(respuesta: unknown): unknown[] | null {
+    if (Array.isArray(respuesta)) {
+      return respuesta;
     }
-  }
 
-  registrarIngreso(nombre: string, dni: string): void {
-    this.guardarMovimiento('ingreso', nombre, dni);
-  }
-
-  registrarEgresos(dnis: string[]): void {
-    const movimientos = this.listar();
-    const fechaBase = Date.now();
-    const nuevosMovimientos = dnis.map((dni, index): MovimientoGuardia => ({
-      id: fechaBase + index,
-      tipo: 'egreso',
-      nombre: this.buscarNombre(movimientos, dni),
-      dni,
-      fechaRegistro: new Date(fechaBase + index).toISOString()
-    }));
-
-    this.guardarTodos([...nuevosMovimientos, ...movimientos]);
-  }
-
-  obtenerNombrePorDni(dni: string): string {
-    return this.buscarNombre(this.listar(), dni.trim());
-  }
-
-  private guardarMovimiento(tipo: TipoMovimientoGuardia, nombre: string, dni: string): void {
-    const ahora = Date.now();
-    this.guardarTodos([{
-      id: ahora,
-      tipo,
-      nombre: nombre.trim(),
-      dni: dni.trim(),
-      fechaRegistro: new Date(ahora).toISOString()
-    }, ...this.listar()]);
-  }
-
-  private guardarTodos(movimientos: MovimientoGuardia[]): void {
-    if (typeof window === 'undefined') {
-      return;
+    if (typeof respuesta !== 'object' || respuesta === null) {
+      return null;
     }
 
-    try {
-      window.localStorage.setItem(HISTORIAL_GUARDIA_STORAGE_KEY, JSON.stringify(movimientos));
-    } catch (error: unknown) {
-      console.error('No se pudo guardar el historial de ingresos y egresos:', error);
-    }
+    const objeto = respuesta as Record<string, unknown>;
+    const registros = objeto['results'] ?? objeto['movimientos'];
+    return Array.isArray(registros) ? registros : null;
   }
 
-  private buscarNombre(movimientos: MovimientoGuardia[], dni: string): string {
-    return movimientos.find((movimiento) => movimiento.dni === dni && movimiento.nombre)?.nombre ?? '';
+  private extraerNombre(texto: string): string | null {
+    const coincidencia = texto.match(
+      /(?:visitante autorizado|ingreso autorizado|ingreso registrado|egreso autorizado|egreso registrado|nombre|visitante)\s*(?::|-\s*)\s*([^.;\n]+)/i
+    );
+    const nombre = coincidencia?.[1]?.trim();
+    return nombre && !/^(?:DNI|documento)\b/i.test(nombre) ? nombre : null;
   }
 }
