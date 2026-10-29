@@ -37,11 +37,12 @@ class AlertaRecepcionarView(views.APIView):
     permission_classes = [IsGuardiaRole]
 
     def put(self, request, pk):
-            try:
-                alerta = Alerta.objects.get(estado=AlertaState.enviada, pk=pk)
-            except Alerta.DoesNotExist:
-                return Response({"error": "La alerta no existe o ya se respondio"}, status=status.HTTP_404_NOT_FOUND)
-
+        try:
+            alerta = Alerta.objects.get(estado=AlertaState.enviada, pk=pk)
+        except Alerta.DoesNotExist:
+            return Response({"error": "La alerta no existe o ya se respondio"}, status=status.HTTP_404_NOT_FOUND)
+        
+        try:
             rechazada = request.data.get('rechazada')
             alerta.estado = AlertaState.confirmada
             if rechazada:
@@ -49,8 +50,9 @@ class AlertaRecepcionarView(views.APIView):
                 alerta.estado = AlertaState.rechazada
                 alerta.motivo_rechazo = motivo
             alerta.save()
-
             return Response({'La alerta fue recepcionada'}, status=status.HTTP_200_OK)
+        except Exception as e:
+           return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST) 
 
 
 @api_view(['GET'])
